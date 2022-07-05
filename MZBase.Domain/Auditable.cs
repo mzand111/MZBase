@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MZBase.Domain
 {
-    public class Auditable<PrimaryKey> : IAuditable<PrimaryKey>
+    public class Auditable<PrimaryKey> : Model<PrimaryKey>,IAuditable<PrimaryKey>
         where PrimaryKey : struct
     {
         public string CreatedBy { get; set; }
