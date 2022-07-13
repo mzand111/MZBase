@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace MZBase.EntityFrameworkCore
 {
-    public class UnitOfWorkAsync : IUnitOfWorkAsync
+    public class UnitOfWorkAsync<T> : IUnitOfWorkAsync
+        where T : DbContext
     {
-        protected readonly DbContext _dbContext;
+        protected readonly T _dbContext;
         private bool disposed;
 
-        public UnitOfWorkAsync(DbContext dbContext)
+        public UnitOfWorkAsync(T dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
