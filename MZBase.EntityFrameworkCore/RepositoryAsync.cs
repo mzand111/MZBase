@@ -10,25 +10,43 @@ using System.Threading.Tasks;
 
 namespace MZBase.EntityFrameworkCore
 {
-    public class RepositoryAsync<ModelEntity, PrimaryKeyType> : IRepositoryAsync<ModelEntity, PrimaryKeyType>
-        where ModelEntity : Model<PrimaryKeyType>
+    public abstract class RepositoryAsync<DBModelEntity,DomainModelEntity, PrimaryKeyType> : IRepositoryAsync<DomainModelEntity, PrimaryKeyType>
+        where DomainModelEntity : Model<PrimaryKeyType>
+        where DBModelEntity: DomainModelEntity
         where PrimaryKeyType : struct
     {
-        protected readonly DbSet<ModelEntity> _entities;
+        protected readonly DbSet<DBModelEntity> _entities;
         protected readonly DbContext _context;
         public RepositoryAsync(DbContext context)
         {
-            _entities = context.Set<ModelEntity>();
+            _entities = context.Set<DBModelEntity>();
             _context = context;
         }
-        public async Task<IReadOnlyList<ModelEntity>> AllItemsAsync() => await _entities.ToListAsync();
-        public Task<ModelEntity> FirstOrDefaultAsync(Expression<Func<ModelEntity, bool>> predicate) => _entities.FirstOrDefaultAsync(predicate);
-        public async Task DeleteAsync(ModelEntity item) => _entities.Remove(item);
-        public async Task<ModelEntity> InsertAsync(ModelEntity item) => _entities.Add(item).Entity;
+        public async Task<IReadOnlyList<DomainModelEntity>> AllItemsAsync() => await _entities.ToListAsync();
+        public Task<DomainModelEntity?> FirstOrDefaultAsync(Expression<Func<DomainModelEntity, bool>> predicate) => _entities.FirstOrDefaultAsync(predicate);
+        public async Task DeleteAsync(DomainModelEntity item)
+        {
+            if (item is DBModelEntity)
+            {
+                _entities.Remove(item as DBModelEntity);
+            }
+            
+        }
+        public async Task<DomainModelEntity> InsertAsync(DomainModelEntity item)
+        {
+            if (item is DBModelEntity)
+            {
+                return _entities.Add(item as DBModelEntity).Entity;
+            }
+            else
+            {
+                return default(DomainModelEntity);
+            }
+        }
 
-        public async Task<ModelEntity> GetByIdAsync(PrimaryKeyType id) => await _entities.FindAsync(id);
+        public async Task<DomainModelEntity> GetByIdAsync(PrimaryKeyType id) => await _entities.FindAsync(id);
 
-        public async Task UpdateAsync(ModelEntity item)
+        public async Task UpdateAsync(DomainModelEntity item)
         {
             _context.Entry(item).State = EntityState.Modified;
             return;

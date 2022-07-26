@@ -19,8 +19,8 @@ namespace MZBase.Infrastructure
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<ModelItem> GetByIdAsync(T id);
-        Task<ModelItem> FirstOrDefaultAsync(Expression<Func<ModelItem, bool>> predicate);
+        Task<ModelItem?> GetByIdAsync(T id);
+        Task<ModelItem?> FirstOrDefaultAsync(Expression<Func<ModelItem, bool>> predicate);
         #endregion
 
         #region group retrieve

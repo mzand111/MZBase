@@ -11,17 +11,18 @@ using System.Threading.Tasks;
 
 namespace MZBase.EntityFrameworkCore
 {
-    public class LDRCompatibleRepositoryAsync<ModelEntity, PrimaryKeyType> : RepositoryAsync<ModelEntity, PrimaryKeyType>, ILDRCompatibleRepositoryAsync<ModelEntity, PrimaryKeyType>
-          where ModelEntity : Model<PrimaryKeyType>
+    public class LDRCompatibleRepositoryAsync<DBModelEntity,DomainModelEntity, PrimaryKeyType> : RepositoryAsync<DBModelEntity, DomainModelEntity, PrimaryKeyType>, ILDRCompatibleRepositoryAsync<DomainModelEntity, PrimaryKeyType>
+        where DomainModelEntity : Model<PrimaryKeyType>
+          where DBModelEntity :  DomainModelEntity
         where PrimaryKeyType : struct
     {
         public LDRCompatibleRepositoryAsync(DbContext context):base(context)
         {
 
         }
-        public async Task<LinqDataResult<ModelEntity>> AllItemsAsync(LinqDataRequest request)
+        public async Task<LinqDataResult<DomainModelEntity>> AllItemsAsync(LinqDataRequest request)
         {
-            return await _context.Set<ModelEntity>().ToLinqDataResultAsync(request.Take, request.Skip, request.Sort, request.Filter);
+            return await _context.Set<DBModelEntity>().ToLinqDataResultAsync< DomainModelEntity>(request.Take, request.Skip, request.Sort, request.Filter);
         }
     }
 }
