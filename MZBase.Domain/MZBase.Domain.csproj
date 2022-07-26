@@ -5,6 +5,10 @@
     <Nullable>enable</Nullable>
     <Version>1.0.4</Version>
     <Authors>Mahdi Zandakbari</Authors>
+    <Description>A simple library for base classes of common usabilities needed in enterprise software</Description>
+    <PackageProjectUrl>https://github.com/mzand111/MZBase</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mzand111/MZBase</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
