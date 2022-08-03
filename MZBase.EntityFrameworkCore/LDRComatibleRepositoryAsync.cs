@@ -20,7 +20,7 @@ namespace MZBase.EntityFrameworkCore
         {
 
         }
-        public async Task<LinqDataResult<DomainModelEntity>> AllItemsAsync(LinqDataRequest request)
+        public virtual async Task<LinqDataResult<DomainModelEntity>> AllItemsAsync(LinqDataRequest request)
         {
             return await _context.Set<DBModelEntity>().ToLinqDataResultAsync< DomainModelEntity>(request.Take, request.Skip, request.Sort, request.Filter);
         }

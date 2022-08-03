@@ -22,9 +22,9 @@ namespace MZBase.EntityFrameworkCore
             _entities = context.Set<DBModelEntity>();
             _context = context;
         }
-        public async Task<IReadOnlyList<DomainModelEntity>> AllItemsAsync() => await _entities.ToListAsync();
-        public Task<DomainModelEntity?> FirstOrDefaultAsync(Expression<Func<DomainModelEntity, bool>> predicate) => _entities.FirstOrDefaultAsync(predicate);
-        public async Task DeleteAsync(DomainModelEntity item)
+        public virtual async Task<IReadOnlyList<DomainModelEntity>> AllItemsAsync() => await _entities.ToListAsync();
+        public virtual Task<DomainModelEntity?> FirstOrDefaultAsync(Expression<Func<DomainModelEntity, bool>> predicate) => _entities.FirstOrDefaultAsync(predicate);
+        public virtual async Task DeleteAsync(DomainModelEntity item)
         {
             if (item is DBModelEntity)
             {
@@ -32,7 +32,7 @@ namespace MZBase.EntityFrameworkCore
             }
             
         }
-        public async Task<DomainModelEntity> InsertAsync(DomainModelEntity item)
+        public virtual async Task<DomainModelEntity> InsertAsync(DomainModelEntity item)
         {
             if (item is DBModelEntity)
             {
@@ -44,9 +44,9 @@ namespace MZBase.EntityFrameworkCore
             }
         }
 
-        public async Task<DomainModelEntity> GetByIdAsync(PrimaryKeyType id) => await _entities.FindAsync(id);
+        public virtual async Task<DomainModelEntity?> GetByIdAsync(PrimaryKeyType id) => await _entities.FindAsync(id);
 
-        public async Task UpdateAsync(DomainModelEntity item)
+        public virtual async Task UpdateAsync(DomainModelEntity item)
         {
             _context.Entry(item).State = EntityState.Modified;
             return;
