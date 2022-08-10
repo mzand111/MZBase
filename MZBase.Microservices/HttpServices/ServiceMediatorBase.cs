@@ -129,7 +129,7 @@ namespace MZBase.Microservices.HttpServices
                        , _serviceUniqueName
                        , _httpClientBaseAddress + apiUrl);
 
-                var responsContent1 = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+          
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
                     try
