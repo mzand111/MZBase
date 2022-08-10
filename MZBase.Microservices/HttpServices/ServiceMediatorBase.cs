@@ -43,23 +43,32 @@ namespace MZBase.Microservices.HttpServices
                        , "GetAsync"
                        , _serviceUniqueName
                        , _httpClientBaseAddress + address);
-                try
-                {
-                    using var contentStream =
-                        await httpResponseMessage.Content.ReadAsStreamAsync();
 
-                    var outp = await JsonSerializer.DeserializeAsync
-                         <TOut>(contentStream);
-                    return outp;
-                }
-                catch (Exception inner)
+                using (var stream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
-                    _logger.LogError(inner, "Error reading content and deserializing after successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
-                        , "GetAsync"
-                        , _serviceUniqueName
-                        , _httpClientBaseAddress + address);
-                    throw new Exception("Error reading content and deserializing after successfully called remote procedure");
+                    try
+                    {
+                        var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream, new JsonSerializerOptions() { MaxDepth = 5, IncludeFields = true, PropertyNameCaseInsensitive = true });
+                        return apiResponseDto;
+                    }
+                    catch (Exception ex)
+                    {
+
+                        string exMessage = ex.Message; ;
+                        if (ex.InnerException != null)
+                        {
+                            exMessage += ",Inner message" + ex.InnerException.Message;
+                        }
+                        _logger.LogError(ex, "Failed to do deserialize output after successfull get method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                            + exMessage
+                         , "GetAsync"
+                         , _serviceUniqueName
+                         , _httpClientBaseAddress + address);
+
+                        throw new Exception("Error reading content and deserializing after successfully called remote procedure:" + exMessage);
+                    }
                 }
+
             }
         }
         //protected async ValueTask<TOut> GetAsync<TIn, TOut>(TIn item, string apiUrl)
