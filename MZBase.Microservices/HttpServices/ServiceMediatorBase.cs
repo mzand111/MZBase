@@ -41,6 +41,17 @@ namespace MZBase.Microservices.HttpServices
                     await processNotSuccessfullResponse(httpResponseMessage, address, "GetAsync");
                 }
 
+                if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
+                {
+                    //var t = typeof(TOut);
+                    //if (Nullable.GetUnderlyingType(t) == null)
+                    //{
+                    //    
+                    //    // T is a Nullable<>
+                    //}
+                    return default;
+                }
+
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                        , "GetAsync"
                        , _serviceUniqueName
