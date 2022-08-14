@@ -22,6 +22,8 @@ namespace MZBase.Microservices.HttpServices
             _httpClientBaseAddress = serviceBaseAddress;
             _serviceUniqueName = serviceUniqeName;
             _logger = logger;
+
+            _httpClient.BaseAddress = new Uri(_httpClientBaseAddress);
         }
 
         protected async ValueTask<TOut> GetAsync<TOut>(string address)
@@ -30,7 +32,7 @@ namespace MZBase.Microservices.HttpServices
                 , "GetAsync"
                 , _serviceUniqueName
                 , _httpClientBaseAddress + address);
-            _httpClient.BaseAddress = new Uri(_httpClientBaseAddress);
+            
             using (var httpResponseMessage = await _httpClient.GetAsync(address))
             {
 
