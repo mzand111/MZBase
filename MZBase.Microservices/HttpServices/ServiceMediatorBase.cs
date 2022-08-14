@@ -318,6 +318,8 @@ namespace MZBase.Microservices.HttpServices
             {
                 responsContent = responsContent.Replace("{", "[");
                 responsContent = responsContent.Replace("}", "]");
+                responsContent = responsContent.Replace("\"", "");
+
                 _logger.LogError("Failed to do post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' ReasonPhrase:" + response.ReasonPhrase
                     + ",responsContent:" + responsContent
                   , "PutAsync"
