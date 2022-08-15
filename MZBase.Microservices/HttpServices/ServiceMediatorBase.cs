@@ -25,7 +25,28 @@ namespace MZBase.Microservices.HttpServices
 
             _httpClient.BaseAddress = new Uri(_httpClientBaseAddress);
         }
+        protected async Task GetAsync(string address)
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                , "GetAsync"
+                , _serviceUniqueName
+                , _httpClientBaseAddress + address);
 
+            using (var httpResponseMessage = await _httpClient.GetAsync(address))
+            {
+
+                if (!httpResponseMessage.IsSuccessStatusCode)
+                {
+                    await processNotSuccessfullResponse(httpResponseMessage, address, "GetAsync");
+                }               
+
+                _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                       , "GetAsync"
+                       , _serviceUniqueName
+                       , _httpClientBaseAddress + address);               
+
+            }
+        }
         protected async ValueTask<TOut> GetAsync<TOut>(string address)
         {
             _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
@@ -128,6 +149,34 @@ namespace MZBase.Microservices.HttpServices
         /// Post Async Method
         /// </summary>
         /// <typeparam name="TIn"></typeparam>
+        /// <param name="item"></param>
+        /// <param name="apiUrl"></param>
+        /// <param name="headers"></param>
+        /// <returns></returns>
+        protected async Task PostAsync<TIn>(TIn item, string apiUrl, Dictionary<string, string>? headers = null) where TIn : class
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'", "PostAsync", _serviceUniqueName, _httpClientBaseAddress + apiUrl);
+
+            var jsonPayload = JsonSerializer.Serialize(item);
+            using (var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
+            using (var request = CreateHttpRequest(_httpClientBaseAddress + apiUrl, HttpMethod.Post, content, headers))
+            using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    await processNotSuccessfullResponse(response, apiUrl, "PostAsync");
+                }
+                _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                       , "PostAsync"
+                       , _serviceUniqueName
+                       , _httpClientBaseAddress + apiUrl);
+            }
+        }
+
+        /// <summary>
+        /// Post Async Method
+        /// </summary>
+        /// <typeparam name="TIn"></typeparam>
         /// <typeparam name="TOut"></typeparam>
         /// <param name="item"></param>
         /// <param name="apiUrl"></param>
@@ -151,7 +200,7 @@ namespace MZBase.Microservices.HttpServices
                        , _serviceUniqueName
                        , _httpClientBaseAddress + apiUrl);
 
-          
+
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
                     try
@@ -235,6 +284,37 @@ namespace MZBase.Microservices.HttpServices
                     }
                     return default;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Put Async Method
+        /// </summary>
+        /// <typeparam name="TIn"></typeparam>
+        /// <param name="item"></param>
+        /// <param name="apiUrl"></param>
+        /// <param name="headers"></param>
+        /// <returns></returns>
+        protected async Task PutAsync<TIn>(TIn item, string apiUrl, Dictionary<string, string>? headers = null) where TIn : class
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                , "PutAsync"
+                , _serviceUniqueName
+                , _httpClientBaseAddress + apiUrl);
+            var jsonPayload = JsonSerializer.Serialize(item);
+            using (var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
+            using (var request = CreateHttpRequest(_httpClientBaseAddress + apiUrl, HttpMethod.Put, content, headers))
+            using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    await processNotSuccessfullResponse(response, apiUrl, "PutAsync");
+                }
+                _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                      , "PutAsync"
+                      , _serviceUniqueName
+                      , _httpClientBaseAddress + apiUrl);
+               
             }
         }
 
