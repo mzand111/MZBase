@@ -7,10 +7,10 @@ namespace MZBase.Domain
     public class Auditable<PrimaryKey> : Model<PrimaryKey>,IAuditable<PrimaryKey>
         where PrimaryKey : struct
     {
-        public string CreatedBy { get; set; }
-        public string LastModifiedBy { get; set ; }
-        public DateTime CreationTime { get; set; }
-        public DateTime LastModificationTime { get; set; }
-        public PrimaryKey ID { get; set; }
+        public virtual string CreatedBy { get; set; }
+        public virtual string LastModifiedBy { get; set ; }
+        public virtual DateTime CreationTime { get; set; }
+        public virtual DateTime LastModificationTime { get; set; }
+        public virtual PrimaryKey ID { get; set; }
     }
 }
