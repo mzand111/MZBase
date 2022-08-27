@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -315,6 +316,91 @@ namespace MZBase.Microservices.HttpServices
                       , _serviceUniqueName
                       , _httpClientBaseAddress + apiUrl);
                
+            }
+        }
+
+        public async Task PostFormFileAsync(IFormFile content, string apiUrl)
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                , "PostFormFileAsync"
+                , _serviceUniqueName
+                , _httpClientBaseAddress + apiUrl);
+            using (var target = new MemoryStream())
+            {
+                content.CopyTo(target);
+                var multipartContent = new MultipartFormDataContent();
+                multipartContent.Add(new ByteArrayContent(target.ToArray()), "file", Path.GetFileName(content.FileName));
+
+                using (var request = CreateHttpRequest(_httpClientBaseAddress + apiUrl, HttpMethod.Post, multipartContent))
+                using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        await processNotSuccessfullResponse(response, apiUrl, "PutAsync");
+                    }
+
+                    _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                     , "PostFormFileAsync"
+                     , _serviceUniqueName
+                     , _httpClientBaseAddress + apiUrl);
+                }
+            }
+        }
+
+        public async Task<TOut> PostFormFileAsync<TOut>(IFormFile content, string apiUrl)
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                , "PostFormFileAsync"
+                , _serviceUniqueName
+                , _httpClientBaseAddress + apiUrl);
+            using (var target = new MemoryStream())
+            {
+                content.CopyTo(target);
+                var multipartContent = new MultipartFormDataContent();
+                multipartContent.Add(new ByteArrayContent(target.ToArray()), "file", Path.GetFileName(content.FileName));
+
+                using (var request = CreateHttpRequest(_httpClientBaseAddress + apiUrl, HttpMethod.Post, multipartContent))
+                using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        await processNotSuccessfullResponse(response, apiUrl, "PutAsync");
+                    }
+
+                    _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                     , "PostFormFileAsync"
+                     , _serviceUniqueName
+                     , _httpClientBaseAddress + apiUrl);
+
+                    using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                    {
+                        if (stream != null && stream.Length > 0)
+                        {
+                            try
+                            {
+                                var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream);
+                                return apiResponseDto;
+                            }
+                            catch (Exception ex)
+                            {
+
+                                string exMessage = ex.Message; ;
+                                if (ex.InnerException != null)
+                                {
+                                    exMessage += ",Inner message" + ex.InnerException.Message;
+                                }
+                                _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                                    + exMessage
+                                 , "PostFormFileAsync"
+                                 , _serviceUniqueName
+                                 , _httpClientBaseAddress + apiUrl);
+
+                                throw new Exception("Failed to deserialize the response:" + exMessage);
+                            }
+                        }
+                        return default;
+                    }
+                }
             }
         }
 
