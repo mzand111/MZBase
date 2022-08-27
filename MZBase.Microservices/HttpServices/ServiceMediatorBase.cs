@@ -432,7 +432,7 @@ namespace MZBase.Microservices.HttpServices
             }
         }
 
-        private HttpRequestMessage CreateHttpRequest(string apiUrl, HttpMethod httpMethod, HttpContent content, Dictionary<string, string>? headers = null, string acceptType = "application/json")
+        protected HttpRequestMessage CreateHttpRequest(string apiUrl, HttpMethod httpMethod, HttpContent content, Dictionary<string, string>? headers = null, string acceptType = "application/json")
         {
             var request = new HttpRequestMessage();
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(acceptType));
@@ -452,7 +452,7 @@ namespace MZBase.Microservices.HttpServices
             return request;
         }
 
-        private async Task processNotSuccessfullResponse(HttpResponseMessage? response, string apiUrl, string methodName)
+        protected async Task processNotSuccessfullResponse(HttpResponseMessage? response, string apiUrl, string methodName)
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
