@@ -65,12 +65,7 @@ namespace MZBase.Microservices.HttpServices
 
                 if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
                 {
-                    //var t = typeof(TOut);
-                    //if (Nullable.GetUnderlyingType(t) == null)
-                    //{
-                    //    
-                    //    // T is a Nullable<>
-                    //}
+                   
                     return default;
                 }
 
@@ -505,6 +500,46 @@ namespace MZBase.Microservices.HttpServices
 
                 throw new Exception("Failed calling remote procedure:" + response.ReasonPhrase + "," + responsContent);
             }
+        }
+
+
+        public async ValueTask<(byte[], string contentType, string fileName)> GetFileContentAsync(string address)
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                , "GetAsync"
+                , _serviceUniqueName
+                , _httpClientBaseAddress + address);
+
+
+            using var httpResponseMessage = await _httpClient.GetAsync(address);
+
+
+            if (!httpResponseMessage.IsSuccessStatusCode)
+            {
+                await processNotSuccessfullResponse(httpResponseMessage, address, "GetAsync");
+            }
+
+            if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
+            {
+
+                return default;
+            }
+
+            _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                   , "GetAsync"
+                   , _serviceUniqueName
+                   , _httpClientBaseAddress + address);
+
+            using var ras = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            var contentType = httpResponseMessage.Content.Headers.ContentType.ToString();
+            MemoryStream outs = new MemoryStream();
+            string fileName = httpResponseMessage.Content.Headers.ContentDisposition.FileName;
+            ras.CopyTo(outs);
+
+
+            return (outs.ToArray(), contentType, fileName);
+
+
         }
     }
 }
