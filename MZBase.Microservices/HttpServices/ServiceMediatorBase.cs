@@ -223,6 +223,31 @@ namespace MZBase.Microservices.HttpServices
                 }
             }
         }
+      /// <summary>
+      /// 
+      /// </summary>
+      /// <param name="apiUrl"></param>
+      /// <param name="headers"></param>
+      /// <returns></returns>
+        protected async Task PostAsync(string apiUrl, Dictionary<string, string>? headers = null)
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'", "PostAsync", _serviceUniqueName, _httpClientBaseAddress + apiUrl);
+
+
+
+            using (var request = CreateHttpRequest(_httpClientBaseAddress + apiUrl, HttpMethod.Post, null, headers))
+            using (var response = await _httpClient.SendAsync(request).ConfigureAwait(false))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    await processNotSuccessfullResponse(response, apiUrl, "PostAsync");
+                }
+                _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                       , "PostAsync"
+                       , _serviceUniqueName
+                       , _httpClientBaseAddress + apiUrl);
+            }
+        }
 
         /// <summary>
         /// Put Async Method
