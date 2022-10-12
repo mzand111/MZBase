@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MZBase.Infrastructure.Service
 {
+
     public abstract class BusinessService<LogCategory>
     {
         protected readonly ILogger<LogCategory> _logger;
