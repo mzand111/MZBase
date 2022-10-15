@@ -356,7 +356,7 @@ namespace MZBase.Microservices.HttpServices
                 {
                     if (!response.IsSuccessStatusCode)
                     {
-                        await processNotSuccessfullResponse(response, apiUrl, "PutAsync");
+                        await processNotSuccessfullResponse(response, apiUrl, "PostFormFileAsync");
                     }
 
                     _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
@@ -384,7 +384,7 @@ namespace MZBase.Microservices.HttpServices
                 {
                     if (!response.IsSuccessStatusCode)
                     {
-                        await processNotSuccessfullResponse(response, apiUrl, "PutAsync");
+                        await processNotSuccessfullResponse(response, apiUrl, "PostFormFileAsync");
                     }
 
                     _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
@@ -505,7 +505,7 @@ namespace MZBase.Microservices.HttpServices
             if (string.IsNullOrWhiteSpace(responsContent))
             {
                 _logger.LogError("Failed calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' reading response content was not posible or no response:" + response.ReasonPhrase
-                    , "PutAsync"
+                    , methodName
                     , _serviceUniqueName
                     , _httpClientBaseAddress + apiUrl);
 
@@ -519,7 +519,7 @@ namespace MZBase.Microservices.HttpServices
 
                 _logger.LogError("Failed to do post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' ReasonPhrase:" + response.ReasonPhrase
                     + ",responsContent:" + responsContent
-                  , "PutAsync"
+                  , methodName
                   , _serviceUniqueName
                   , _httpClientBaseAddress + apiUrl);
 
