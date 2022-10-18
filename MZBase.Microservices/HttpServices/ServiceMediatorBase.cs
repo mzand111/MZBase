@@ -39,12 +39,12 @@ namespace MZBase.Microservices.HttpServices
                 if (!httpResponseMessage.IsSuccessStatusCode)
                 {
                     await processNotSuccessfullResponse(httpResponseMessage, address, "GetAsync");
-                }               
+                }
 
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                        , "GetAsync"
                        , _serviceUniqueName
-                       , _httpClientBaseAddress + address);               
+                       , _httpClientBaseAddress + address);
 
             }
         }
@@ -54,7 +54,7 @@ namespace MZBase.Microservices.HttpServices
                 , "GetAsync"
                 , _serviceUniqueName
                 , _httpClientBaseAddress + address);
-            
+
             using (var httpResponseMessage = await _httpClient.GetAsync(address))
             {
 
@@ -65,7 +65,7 @@ namespace MZBase.Microservices.HttpServices
 
                 if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
                 {
-                   
+
                     return default;
                 }
 
@@ -74,30 +74,41 @@ namespace MZBase.Microservices.HttpServices
                        , _serviceUniqueName
                        , _httpClientBaseAddress + address);
 
-                using (var stream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+
+                try
                 {
-                    try
+                    if (typeof(TOut) == typeof(String))
                     {
-                        var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream, new JsonSerializerOptions() { MaxDepth = 5, IncludeFields = true, PropertyNameCaseInsensitive = true });
-                        return apiResponseDto;
+                        string s = await httpResponseMessage.Content.ReadAsStringAsync();
+                        return (TOut)(object)s;
                     }
-                    catch (Exception ex)
+                    else
                     {
-
-                        string exMessage = ex.Message; ;
-                        if (ex.InnerException != null)
+                        using (var stream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
-                            exMessage += ",Inner message" + ex.InnerException.Message;
+                            var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream, new JsonSerializerOptions() { MaxDepth = 5, IncludeFields = true, PropertyNameCaseInsensitive = true });
+                            return apiResponseDto;
                         }
-                        _logger.LogError(ex, "Failed to do deserialize output after successfull get method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
-                            + exMessage
-                         , "GetAsync"
-                         , _serviceUniqueName
-                         , _httpClientBaseAddress + address);
-
-                        throw new Exception("Error reading content and deserializing after successfully called remote procedure:" + exMessage);
                     }
                 }
+                catch (Exception ex)
+                {
+
+                    string exMessage = ex.Message; ;
+                    if (ex.InnerException != null)
+                    {
+                        exMessage += ",Inner message" + ex.InnerException.Message;
+                    }
+
+                    _logger.LogError(ex, "Failed to do deserialize output after successfull get method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                        + exMessage
+                     , "GetAsync"
+                     , _serviceUniqueName
+                     , _httpClientBaseAddress + address);
+
+                    throw new Exception("Error reading content and deserializing after successfully called remote procedure:" + exMessage);
+                }
+
 
             }
         }
@@ -197,38 +208,48 @@ namespace MZBase.Microservices.HttpServices
                        , _httpClientBaseAddress + apiUrl);
 
 
-                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+
+                try
                 {
-                    try
+                    if (typeof(TOut) == typeof(String))
                     {
-                        var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream, new JsonSerializerOptions() { MaxDepth = 5, IncludeFields = true, PropertyNameCaseInsensitive = true });
-                        return apiResponseDto;
+                        string s = await response.Content.ReadAsStringAsync();
+                        return (TOut)(object)s;
                     }
-                    catch (Exception ex)
+                    else
                     {
-
-                        string exMessage = ex.Message; ;
-                        if (ex.InnerException != null)
+                        using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
-                            exMessage += ",Inner message" + ex.InnerException.Message;
+                            var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream, new JsonSerializerOptions() { MaxDepth = 5, IncludeFields = true, PropertyNameCaseInsensitive = true });
+                            return apiResponseDto;
                         }
-                        _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
-                            + exMessage
-                         , "PostAsync"
-                         , _serviceUniqueName
-                         , _httpClientBaseAddress + apiUrl);
-
-                        throw new Exception("Failed to deserialize the response:" + exMessage);
                     }
                 }
+                catch (Exception ex)
+                {
+
+                    string exMessage = ex.Message; ;
+                    if (ex.InnerException != null)
+                    {
+                        exMessage += ",Inner message" + ex.InnerException.Message;
+                    }
+                    _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                        + exMessage
+                     , "PostAsync"
+                     , _serviceUniqueName
+                     , _httpClientBaseAddress + apiUrl);
+
+                    throw new Exception("Failed to deserialize the response:" + exMessage);
+                }
+
             }
         }
-      /// <summary>
-      /// 
-      /// </summary>
-      /// <param name="apiUrl"></param>
-      /// <param name="headers"></param>
-      /// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="apiUrl"></param>
+        /// <param name="headers"></param>
+        /// <returns></returns>
         protected async Task PostAsync(string apiUrl, Dictionary<string, string>? headers = null)
         {
             _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'", "PostAsync", _serviceUniqueName, _httpClientBaseAddress + apiUrl);
@@ -277,34 +298,44 @@ namespace MZBase.Microservices.HttpServices
                       , "PutAsync"
                       , _serviceUniqueName
                       , _httpClientBaseAddress + apiUrl);
-                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+
+                try
                 {
-                    if (stream != null && stream.Length > 0)
+                    if (typeof(TOut) == typeof(String))
                     {
-                        try
+                        string s = await response.Content.ReadAsStringAsync();
+                        return (TOut)(object)s;
+                    }
+                    else
+                    {
+                        using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
-                            var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream);
-                            return apiResponseDto;
-                        }
-                        catch (Exception ex)
-                        {
-
-                            string exMessage = ex.Message; ;
-                            if (ex.InnerException != null)
+                            if (stream != null && stream.Length > 0)
                             {
-                                exMessage += ",Inner message" + ex.InnerException.Message;
+                                var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream);
+                                return apiResponseDto;
                             }
-                            _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
-                                + exMessage
-                             , "PutAsync"
-                             , _serviceUniqueName
-                             , _httpClientBaseAddress + apiUrl);
-
-                            throw new Exception("Failed to deserialize the response:" + exMessage);
+                            return default;
                         }
                     }
-                    return default;
                 }
+                catch (Exception ex)
+                {
+
+                    string exMessage = ex.Message; ;
+                    if (ex.InnerException != null)
+                    {
+                        exMessage += ",Inner message" + ex.InnerException.Message;
+                    }
+                    _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                        + exMessage
+                     , "PutAsync"
+                     , _serviceUniqueName
+                     , _httpClientBaseAddress + apiUrl);
+
+                    throw new Exception("Failed to deserialize the response:" + exMessage);
+                }
+
             }
         }
 
@@ -335,7 +366,7 @@ namespace MZBase.Microservices.HttpServices
                       , "PutAsync"
                       , _serviceUniqueName
                       , _httpClientBaseAddress + apiUrl);
-               
+
             }
         }
 
@@ -392,34 +423,44 @@ namespace MZBase.Microservices.HttpServices
                      , _serviceUniqueName
                      , _httpClientBaseAddress + apiUrl);
 
-                    using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+
+                    try
                     {
-                        if (stream != null && stream.Length > 0)
+                        if (typeof(TOut) == typeof(String))
                         {
-                            try
-                            {
-                                var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream);
-                                return apiResponseDto;
-                            }
-                            catch (Exception ex)
-                            {
-
-                                string exMessage = ex.Message; ;
-                                if (ex.InnerException != null)
-                                {
-                                    exMessage += ",Inner message" + ex.InnerException.Message;
-                                }
-                                _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
-                                    + exMessage
-                                 , "PostFormFileAsync"
-                                 , _serviceUniqueName
-                                 , _httpClientBaseAddress + apiUrl);
-
-                                throw new Exception("Failed to deserialize the response:" + exMessage);
-                            }
+                            string s = await response.Content.ReadAsStringAsync();
+                            return (TOut)(object)s;
                         }
-                        return default;
+                        else
+                        {
+                            using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                            {
+                                if (stream != null && stream.Length > 0)
+                                {
+                                    var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream);
+                                    return apiResponseDto;
+                                }
+                            }
+                            return default;
+                        }
                     }
+                    catch (Exception ex)
+                    {
+
+                        string exMessage = ex.Message; ;
+                        if (ex.InnerException != null)
+                        {
+                            exMessage += ",Inner message" + ex.InnerException.Message;
+                        }
+                        _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                            + exMessage
+                         , "PostFormFileAsync"
+                         , _serviceUniqueName
+                         , _httpClientBaseAddress + apiUrl);
+
+                        throw new Exception("Failed to deserialize the response:" + exMessage);
+                    }
+
                 }
             }
         }
