@@ -214,6 +214,10 @@ namespace MZBase.Microservices.HttpServices
                     if (typeof(TOut) == typeof(String))
                     {
                         string s = await response.Content.ReadAsStringAsync();
+                        if (s.StartsWith("\"") && s.EndsWith("\"") && s.Length > 1)
+                        {
+                            s = s.Substring(1, s.Length - 2);
+                        }
                         return (TOut)(object)s;
                     }
                     else
@@ -304,6 +308,10 @@ namespace MZBase.Microservices.HttpServices
                     if (typeof(TOut) == typeof(String))
                     {
                         string s = await response.Content.ReadAsStringAsync();
+                        if (s.StartsWith("\"") && s.EndsWith("\"") && s.Length > 1)
+                        {
+                            s = s.Substring(1, s.Length - 2);
+                        }
                         return (TOut)(object)s;
                     }
                     else
@@ -429,6 +437,10 @@ namespace MZBase.Microservices.HttpServices
                         if (typeof(TOut) == typeof(String))
                         {
                             string s = await response.Content.ReadAsStringAsync();
+                            if (s.StartsWith("\"") && s.EndsWith("\"") && s.Length > 1)
+                            {
+                                s = s.Substring(1, s.Length - 2);
+                            }
                             return (TOut)(object)s;
                         }
                         else
