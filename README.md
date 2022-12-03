@@ -6,6 +6,9 @@ You can find the nuget packages here
 
 
 https://www.nuget.org/packages/MZBase.Domain/
+
 https://www.nuget.org/packages/MZBase.Infrastructure/
+
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore/
+
 https://www.nuget.org/packages/MZBase.Microservices/
