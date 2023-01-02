@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <Title>MZBase Test</Title>
+    <Version>1.0.0</Version>
+    <Authors>Mahdi Zandakbari</Authors>
+    <Description>This library provides facilities for testing classes of different layers of MZBase.Infrastructure base library</Description>
+    <PackageProjectUrl>https://github.com/mzand111/MZBase</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mzand111/MZBase</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoBogus" Version="2.13.1" />
+    <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MZBase.Domain\MZBase.Domain.csproj" />
+    <ProjectReference Include="..\MZBase.Infrastructure\MZBase.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
