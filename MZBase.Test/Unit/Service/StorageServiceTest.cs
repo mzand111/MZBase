@@ -16,8 +16,7 @@ using AutoBogus;
 using Bogus;
 
 namespace MZBase.Test.Unit.Service
-{
-    public abstract class StorageServiceTest<StorageService, TUnitOfWork, TModel, PrimarykeyType>
+{    public abstract class StorageServiceTest<StorageService, TUnitOfWork, TModel, PrimarykeyType>
        where StorageService : IStorageBusinessService<TModel, PrimarykeyType>
       where TUnitOfWork : class, IDynamicTestableUnitOfWorkAsync
        where TModel : Model<PrimarykeyType>

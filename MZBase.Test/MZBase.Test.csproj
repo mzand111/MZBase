@@ -4,9 +4,10 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <Title>MZBase Test</Title>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Mahdi Zandakbari</Authors>
     <Description>This library provides facilities for testing classes of different layers of MZBase.Infrastructure base library</Description>
+	  <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/mzand111/MZBase</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mzand111/MZBase</RepositoryUrl>
   </PropertyGroup>
@@ -21,5 +22,8 @@
     <ProjectReference Include="..\MZBase.Domain\MZBase.Domain.csproj" />
     <ProjectReference Include="..\MZBase.Infrastructure\MZBase.Infrastructure.csproj" />
   </ItemGroup>
+	<PropertyGroup>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
 
 </Project>
