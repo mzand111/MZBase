@@ -14,13 +14,15 @@ using MZBase.Infrastructure.Service.Exceptions;
 
 using AutoBogus;
 using Bogus;
+using MZSimpleDynamicLinq.Core;
 
 namespace MZBase.Test.Unit.Service
-{    public abstract class StorageServiceTest<StorageService, TUnitOfWork, TModel, PrimarykeyType>
-       where StorageService : IStorageBusinessService<TModel, PrimarykeyType>
-      where TUnitOfWork : class, IDynamicTestableUnitOfWorkAsync
-       where TModel : Model<PrimarykeyType>
-      where PrimarykeyType : struct
+{
+    public abstract class StorageServiceTest<StorageService, TUnitOfWork, TModel, PrimarykeyType>
+        where StorageService : IStorageBusinessService<TModel, PrimarykeyType>
+       where TUnitOfWork : class, IDynamicTestableUnitOfWorkAsync
+        where TModel : Model<PrimarykeyType>
+       where PrimarykeyType : struct
 
     {
         protected Moq.Mock<ILogger<TModel>> serviceLogger;
@@ -161,6 +163,68 @@ namespace MZBase.Test.Unit.Service
         }
         #endregion
 
+
+        #region Retrieve
+        [Fact]
+        public virtual async Task Base_GetMultiple_Success()
+        {
+            //arrange           
+            Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
+            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            {
+                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+
+                item.Setup(gg => gg.AllItemsAsync(It.IsAny<LinqDataRequest>()))
+                 .ReturnsAsync(new LinqDataResult<TModel>());
+
+                return item.Object;
+            });
+            var localService = GetBusinessService(uofm.Object);
+            //act
+            var obj = await localService.ItemsAsync(new LinqDataRequest());
+
+            Assert.NotEqual(null, obj);//,"Retrived object should not be null"
+
+            //assert
+            serviceLogger.Verify(
+               x => x.Log(
+               It.Is<LogLevel>(l => l == LogLevel.Information),
+               It.Is<EventId>(l => l == service.LogBaseID + 5),
+               It.Is<It.IsAnyType>((v, t) => true),
+               It.Is<Exception>(uu => uu == null),
+               It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
+            serviceLogger.VerifyNoOtherCalls();
+        }
+        [Fact]
+        public virtual async Task Base_GetMultiple_StorageError()
+        {
+            //arrange           
+            Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
+            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            {
+                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+
+                item.Setup(gg => gg.AllItemsAsync(It.IsAny<LinqDataRequest>()))
+                 .Throws(new Exception());
+
+                return item.Object;
+            });
+            var localService = GetBusinessService(uofm.Object);
+            //act
+            Func<Task> act = () => localService.ItemsAsync(new LinqDataRequest());
+            //assert
+            ServiceStorageException exception = await Assert.ThrowsAsync<ServiceStorageException>(act);
+
+            serviceLogger.Verify(
+             x => x.Log(
+             It.Is<LogLevel>(l => l == LogLevel.Error),
+             It.Is<EventId>(l => l == service.LogBaseID + 5),
+             It.Is<It.IsAnyType>((v, t) => true),
+             It.IsAny<ServiceStorageException>(),
+             It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
+            serviceLogger.VerifyNoOtherCalls();
+        }
+        #endregion
         #region Add
         [Fact]
         public virtual async Task Base_Add_ShouldRaise_ServiceArgumentNullException_OnNullInput()
