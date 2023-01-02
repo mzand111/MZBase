@@ -16,7 +16,6 @@ namespace MZBase.Domain
         public virtual DateTime CreationTime { get; set; }
         [Column(Order = 103)]
         public virtual DateTime LastModificationTime { get; set; }
-        [Column(Order =0)]
-        public virtual PrimaryKey ID { get; set; }
+     
     }
 }
