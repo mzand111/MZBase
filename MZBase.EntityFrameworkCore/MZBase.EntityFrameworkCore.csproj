@@ -11,6 +11,7 @@
 Different repository implementations are included.</Description>
     <PackageProjectUrl>https://github.com/mzand111/MZBase</PackageProjectUrl>
     <RepositoryUrl>https://github.com/mzand111/MZBase</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
