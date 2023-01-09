@@ -51,4 +51,4 @@ https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/
 
 Contains:
 
-  -A helper to transfer description attributes of entity classes to extended properties (MS_Description) of related table/column of databse for any ef core DbContext. This changes could be used by any third party tool like Redgate SqlDoc to generate Database documentation.
+  -A helper to transfer description attributes of entity classes to extended properties (MS_Description) of related table/column of databse for any ef core DbContext. This changes could be used by any third party tool like Redgate SqlDoc to generate Database documentation. (Based on the code provided by Mohamood Dehghan here: https://stackoverflow.com/questions/10080601/how-to-add-description-to-columns-in-entity-framework-4-3-code-first-using-migra)
