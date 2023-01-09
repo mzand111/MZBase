@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace MZBase.Infrastructure
 {
+    /// <summary>
+    /// Pageable, sortable and filtarable reop interface
+    /// </summary>
+    /// <typeparam name="ModelItem"></typeparam>
+    /// <typeparam name="T"></typeparam>
     public interface IPSFRepositoryAsync <ModelItem, T>: IRepositoryAsync<ModelItem, T>
           where ModelItem : Model<T>
           where T : struct
