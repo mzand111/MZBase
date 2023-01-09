@@ -58,7 +58,7 @@ namespace MZBase.EntityFrameworkCore.Sql
             }
         }
 
-        private void SetTableDescriptions(Type tableType)
+        private void SetTableDescriptions(Type tableType, bool getDescriptionFromParentIfNotExist = true)
         {
             var fullTableName = context.GetTableName(tableType);
             if (string.IsNullOrWhiteSpace(fullTableName.tableName))
@@ -77,7 +77,18 @@ namespace MZBase.EntityFrameworkCore.Sql
 
             var tblDescAttrs = tableType.GetCustomAttributes(typeof(DisplayAttribute), false);
             if (tblDescAttrs.Length > 0)
+            {
                 SetTableDescription(tableName, ((DisplayAttribute)tblDescAttrs[0]).Name, fullTableName.schema ?? "dbo");
+            }
+            else
+            {
+                if (getDescriptionFromParentIfNotExist)
+                {
+                    var baseDescAttrs = tableType.BaseType?.GetCustomAttributes(typeof(DisplayAttribute), false);
+                    if (baseDescAttrs != null && baseDescAttrs.Length > 0)
+                        SetTableDescription(tableName, ((DisplayAttribute)baseDescAttrs[0]).Name, fullTableName.schema ?? "dbo");
+                }
+            }
 
 
             foreach (var prop in tableType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance))
@@ -228,7 +239,7 @@ namespace MZBase.EntityFrameworkCore.Sql
                              .MakeGenericMethod(new Type[] { tableType });
             return ((string schema, string tableName))method.Invoke(context, new object[] { context });
         }
-       
+
         public static (string schema, string tableName) GetTableName<T>(this DbContext context) where T : class
         {
             var mapping = context.Model.FindEntityType(typeof(T));
@@ -236,7 +247,7 @@ namespace MZBase.EntityFrameworkCore.Sql
             var tableName = mapping.GetTableName();
 
             return (schema, tableName);
-          
+
         }
     }
 }
