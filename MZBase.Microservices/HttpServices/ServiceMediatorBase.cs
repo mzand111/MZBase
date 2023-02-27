@@ -534,7 +534,7 @@ namespace MZBase.Microservices.HttpServices
                , _serviceUniqueName
                , _httpClientBaseAddress + apiUrl);
 
-                throw new UnauthorizedAccessException("Service call not authorized: " + response.ReasonPhrase);
+                throw new UnauthorizedAccessException("Service call not authorized: '" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" + response.ReasonPhrase);
             }
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -542,7 +542,7 @@ namespace MZBase.Microservices.HttpServices
                     , methodName
                     , _serviceUniqueName
                     , _httpClientBaseAddress + apiUrl);
-                throw new Exception("Service address not found: " + response.ReasonPhrase);
+                throw new Exception("Service address not found: '"+ _httpClientBaseAddress + apiUrl+"', Reason Phrase:" + response.ReasonPhrase);
             }
 
             string? responsContent = null;
@@ -562,7 +562,7 @@ namespace MZBase.Microservices.HttpServices
                     , _serviceUniqueName
                     , _httpClientBaseAddress + apiUrl);
 
-                throw new Exception("Failed to do post method:" + response.ReasonPhrase);
+                throw new Exception("Failed to do post method:'" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" +  response.ReasonPhrase);
             }
             else
             {
@@ -576,7 +576,7 @@ namespace MZBase.Microservices.HttpServices
                   , _serviceUniqueName
                   , _httpClientBaseAddress + apiUrl);
 
-                throw new Exception("Failed calling remote procedure:" + response.ReasonPhrase + "," + responsContent);
+                throw new Exception("Failed calling remote procedure:'" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" +response.ReasonPhrase + "," + responsContent);
             }
         }
 

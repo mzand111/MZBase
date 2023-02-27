@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -9,6 +9,9 @@
     <Authors>Mahdi Zandakbari</Authors>
     <Description>An EFCore implementation of some of the more common interfaces of MZBase.Infrustructure.
 Different repository implementations are included.</Description>
+    <PackageProjectUrl>https://github.com/mzand111/MZBase</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mzand111/MZBase</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
