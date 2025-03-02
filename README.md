@@ -28,9 +28,9 @@ Contains:
 
   - `BaseBusinessService` An abstract base class designed to be used as the root of every business service class . 
 
-  - `BaseStorageBusinessService<Model, PrimaryKeyType>` class
+  - `BaseStorageBusinessService<Model, PrimaryKeyType>` Base class for storage business services, providing common functionality for adding, retrieving, modifying, and removing entities.
   
-  - `IStorageBusinessService<DomainModel, PrimaryKeyType>` interface
+  - `IStorageBusinessService<DomainModel, PrimaryKeyType>` interface which is used to shape business services and their relation with the storages like databases.
   
   - Service exception classes
 
@@ -55,7 +55,74 @@ Some classes to faciliate microservice communications:
 ## MZBase.EntityFrameworkCore.Sql
 
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/
-
 Contains:
 
   -A helper to transfer description attributes of entity classes to extended properties (MS_Description) of related table/column of databse for any ef core DbContext. This changes could be used by any third party tool like Redgate SqlDoc to generate Database documentation. (Based on the code provided by Mohamood Dehghan here: https://stackoverflow.com/questions/10080601/how-to-add-description-to-columns-in-entity-framework-4-3-code-first-using-migra)
+
+
+# Breaking Change in version 2
+By getting feedbacks from version 1, the version 2 main goal is to minimize the need to add boiler-plate codes. At the first revisions this movement is mostly seen in BaseStorageBusinessService class. By using decedents of this class (Such as EFCoreStorageBusinessService), you are now able to implement a storage service business class with a few lines of code. 
+## MZBase.Infrastructure
+1-	`IRepositoryAsync`: 
+a.	Converted not-needed async methods to sync methods.
+The operations inside these methods are usually not effected by any time-taking action that require to be async. The time-taking action usually takes place when the storage (usually a data context) is requested to save the changes
+
+b.	The interface is now also aware of data layer entity. So the declaration is changed from 
+
+```cs
+public interface IRepositoryAsync<ModelItem, T>
+```
+
+To 
+
+```cs
+public interface IRepositoryAsync<ModelItem, DBModelEntity, T>
+```
+This change allows service layer classes to use data layer entities without type casting. 
+
+2-	Other interfaces inheriting `IRepositoryAsync`: `IPSFRepositoryAsync`, `ILDRCompatibleRepositoryAsync`
+Changes made to reflect changes to the base interface
+3-	The class `BaseBusinessService`  has been added as a root for all business service classes
+4-	A new base for storage service classes has been added: `BaseStorageBusinessService`
+Decendents of this calss such as `EFCoreStorageBusinessService` are now containing the most common boiler plate codes needed to implement a storage service class. The only methods needed to be implemented by the user are `ValidateOnAddAsync` and `ValidateOnModifyAsync`.
+
+
+## MZBase.EntityFrameworkCore
+
+1.	All the data layer entity object should now implement the `IConvertibleDBModelEntity<T>` interface. This is to ensure a centralized conversion from/to domain objects. This interface has two methods:
+void `SetFieldsFromDomainModel(DomainModelEntity domainModelEntity)`;
+ 	Sets the fields of the database model entity from the domain model entity.
+`DomainModelEntity GetDomainObject();`
+Get the domain model entity instance from the database model entity.
+This is a simple sample of domain and data layer classes implemented in this method:
+```cs
+public class UserProfileImage : Model<Guid>
+{
+    public Guid UserId { get; set; }
+    public byte[]? Image { get; set; }
+    public DateTime CreationTime { get; set; }
+    public Guid CreatorUserId { get; set; }
+}
+```
+
+```cs
+public class UserProfileImageEntity : UserProfileImage, IConvertibleDBModelEntity<UserProfileImage>
+{
+    public UserProfileImage GetDomainObject() => this;
+
+    public void SetFieldsFromDomainModel(UserProfileImage domainModelEntity)
+    {
+        this.ID = domainModelEntity.ID;
+        this.UserId = domainModelEntity.UserId;
+        this.CreatorUserId = domainModelEntity.CreatorUserId;
+        this.CreationTime = domainModelEntity.CreationTime;
+        this.Image = domainModelEntity.Image;
+    }
+}
+```
+
+2.	Methods that were not needed to be async were converted to sync version.
+3.	Thanks to the change that all the db entities now implement `IConvertibleDBModelEntity`, insert method now works with any instance of a `DomainModelEntity`.
+
+
+
