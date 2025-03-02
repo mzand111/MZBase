@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.8</Version>
+    <Version>2.0.0</Version>
     <Authors>Mahdi Zandakbari</Authors>
     <Description>A simple library for base classes of common usabilities needed in enterprise software</Description>
     <PackageProjectUrl>https://github.com/mzand111/MZBase</PackageProjectUrl>
@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MZSimpleDynamicLinq.Core" Version="1.0.2" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageReference Include="MZSimpleDynamicLinq.Core" Version="1.0.3" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

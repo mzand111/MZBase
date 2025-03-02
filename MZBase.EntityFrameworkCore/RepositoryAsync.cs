@@ -1,19 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MZBase.Domain;
 using MZBase.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MZBase.EntityFrameworkCore
 {
-    public abstract class RepositoryAsync<DBModelEntity,DomainModelEntity, PrimaryKeyType> : IRepositoryAsync<DomainModelEntity, PrimaryKeyType>
-        where DomainModelEntity : Model<PrimaryKeyType>
-        where DBModelEntity: DomainModelEntity
-        where PrimaryKeyType : struct
+    public abstract class RepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType> : IRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>
+            where DomainModelEntity : Model<PrimaryKeyType>
+            where DBModelEntity : DomainModelEntity, IConvertibleDBModelEntity<DomainModelEntity>, new()
+            where PrimaryKeyType : struct
     {
         protected readonly DbSet<DBModelEntity> _entities;
         protected readonly DbContext _context;
@@ -23,30 +18,28 @@ namespace MZBase.EntityFrameworkCore
             _context = context;
         }
         public virtual async Task<IReadOnlyList<DomainModelEntity>> AllItemsAsync() => await _entities.ToListAsync();
-        public virtual Task<DomainModelEntity?> FirstOrDefaultAsync(Expression<Func<DomainModelEntity, bool>> predicate) => _entities.FirstOrDefaultAsync(predicate);
-        public virtual async Task DeleteAsync(DomainModelEntity item)
+        public virtual Task<DBModelEntity?> FirstOrDefaultAsync(Expression<Func<DBModelEntity, bool>> predicate) => _entities.FirstOrDefaultAsync(predicate);
+        public virtual async void Delete(DBModelEntity item)
         {
-            if (item is DBModelEntity)
-            {
-                _entities.Remove(item as DBModelEntity);
-            }
-            
+            _entities.Remove(item);
         }
-        public virtual DomainModelEntity Insert(DomainModelEntity item)
+        public virtual DBModelEntity Insert(DomainModelEntity item)
         {
-            if (item is DBModelEntity)
+            if (item is DBModelEntity ent)
             {
-                return _entities.Add(item as DBModelEntity).Entity;
+                return _entities.Add(ent).Entity;
             }
             else
             {
-                return default(DomainModelEntity);
+                DBModelEntity dbEntityObject = new DBModelEntity();
+                dbEntityObject.SetFieldsFromDomainModel(item);
+                return _entities.Add(dbEntityObject).Entity;
             }
         }
 
-        public virtual async Task<DomainModelEntity?> GetByIdAsync(PrimaryKeyType id) => await _entities.FindAsync(id);
+        public virtual async Task<DBModelEntity?> GetByIdAsync(PrimaryKeyType id) => await _entities.FindAsync(id);
 
-        public virtual async Task UpdateAsync(DomainModelEntity item)
+        public virtual void Update(DBModelEntity item)
         {
             _context.Entry(item).State = EntityState.Modified;
             return;

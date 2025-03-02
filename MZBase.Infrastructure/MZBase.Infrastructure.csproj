@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.4</Version>
+    <Version>2.0.0</Version>
     <Authors>Mahdi Zandakbari</Authors>
     <Description>A simple library for base infrastructure interfaces of common usabilities needed in enterprise software.
-It includes interfaces for repository, unit of work and date time providers with testing and domain-technology seperation in mind</Description>
+It includes interfaces for repository, unit of work and date time providers with testing and domain-technology separation in mind</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>

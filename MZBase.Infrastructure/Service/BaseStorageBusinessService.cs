@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MZBase.Infrastructure.Service
 {
-    public abstract class StorageBusinessService<Model, PrimaryKeyType> : BusinessService<Model>, IStorageBusinessService<Model, PrimaryKeyType>
+    public abstract class BaseStorageBusinessService<Model, PrimaryKeyType> : BaseBusinessService<Model>, IStorageBusinessService<Model, PrimaryKeyType>
       where Model : Model<PrimaryKeyType>
       where PrimaryKeyType : struct
     {
@@ -30,7 +30,7 @@ namespace MZBase.Infrastructure.Service
         /// logBaseID+4= Remove
         /// logBaseID+5 =Retrieve multiple
         /// </param>
-        public StorageBusinessService(ILogger<Model> logger, IDateTimeProviderService dateTimeProvider, int logBaseID) : base(logger)
+        public BaseStorageBusinessService(ILogger<Model> logger, IDateTimeProviderService dateTimeProvider, int logBaseID) : base(logger)
         {
 
             _dateTimeProvider = dateTimeProvider;
@@ -232,7 +232,7 @@ namespace MZBase.Infrastructure.Service
         #region validation
 
         protected abstract Task ValidateOnAddAsync(Model item);
-        protected abstract Task ValidateOnModifyAsync(Model recievedItem, Model storageItem);
+        protected abstract Task ValidateOnModifyAsync(Model receivedItem, Model storageItem);
         protected void ValidateIAuditableOnAdd<Model>(List<ModelFieldValidationResult> errors, Model objectToValidate)
            where Model : IAuditable<PrimaryKeyType>
 

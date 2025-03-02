@@ -1,18 +1,17 @@
 ﻿using MZBase.Domain;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MZBase.Infrastructure
 {
     /// <summary>
-    /// Pageable, sortable and filtarable reop interface
+    /// Page-able, sortable and filterable repo interface
     /// </summary>
     /// <typeparam name="ModelItem"></typeparam>
     /// <typeparam name="T"></typeparam>
-    public interface IPSFRepositoryAsync <ModelItem, T>: IRepositoryAsync<ModelItem, T>
+    public interface IPSFRepositoryAsync<ModelItem, DBModelEntity, T> : IRepositoryAsync<ModelItem, DBModelEntity, T>
           where ModelItem : Model<T>
+         where DBModelEntity : ModelItem, IConvertibleDBModelEntity<ModelItem>, new()
           where T : struct
     {
         Task<IReadOnlyList<ModelItem>> AllItemsAsync(int pageSize, int skip);
