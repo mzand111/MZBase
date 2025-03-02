@@ -32,7 +32,7 @@ namespace MZBase.EntityFrameworkCore
             }
             
         }
-        public virtual async Task<DomainModelEntity> InsertAsync(DomainModelEntity item)
+        public virtual DomainModelEntity Insert(DomainModelEntity item)
         {
             if (item is DBModelEntity)
             {
