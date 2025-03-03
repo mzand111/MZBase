@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MZBase.Domain
 {
-    public interface IAuditable<PrimaryKey>:IModel<PrimaryKey>
+    public interface IAuditable<PrimaryKey> : IModel<PrimaryKey>
         where PrimaryKey : struct
     {
         string CreatedBy { get; set; }
