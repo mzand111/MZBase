@@ -1,3 +1,4 @@
+
 # MZBase
 In data-driven applications, there are common requirements that need to be met in the code. One of the key requirements is to separate the domain logic from data storage and retrieval (abstraction of the data layer). To achieve this, we must define the classes of each layer to align with SOLID principles.
 
@@ -10,11 +11,15 @@ This library widely uses MZSimpleDynamicLinq (https://github.com/mzand111/MZSimp
 ## MZBase.Domain
 https://www.nuget.org/packages/MZBase.Domain/
 
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Domain)](https://www.nuget.org/packages/MZBase.Domain/)
+
 A simple library for base classes of common usabilities needed in enterprise software. 
 This library contains classes that are used as base for domain and entity classes.
 
 ## MZBase.Infrastructure
 https://www.nuget.org/packages/MZBase.Infrastructure/
+
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.Infrastructure/)
 
 Contains:
 
@@ -37,6 +42,8 @@ Contains:
 ## MZBase.EntityFrameworkCore
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore/
 
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore/)
+
 Contains EFCore implementations of MZBase.Infrastructure interfaces including
 
   - `RepositoryAsync<DBModelEntity,DomainModelEntity, PrimaryKeyType>`
@@ -48,6 +55,8 @@ Contains EFCore implementations of MZBase.Infrastructure interfaces including
 ## MZBase.Microservices
 https://www.nuget.org/packages/MZBase.Microservices/
 
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.Microservices/)
+
 Some classes to faciliate microservice communications:
 
   - `ServiceMediatorBase<T>`: Wraps HttpClient and do Gets,Posts,Puts and Deletes with exception handling, serialization, logging and authentication. 
@@ -55,6 +64,9 @@ Some classes to faciliate microservice communications:
 ## MZBase.EntityFrameworkCore.Sql
 
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/
+
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/)
+
 Contains:
 
   -A helper to transfer description attributes of entity classes to extended properties (MS_Description) of related table/column of databse for any ef core DbContext. This changes could be used by any third party tool like Redgate SqlDoc to generate Database documentation. (Based on the code provided by Mohamood Dehghan here: https://stackoverflow.com/questions/10080601/how-to-add-description-to-columns-in-entity-framework-4-3-code-first-using-migra)
