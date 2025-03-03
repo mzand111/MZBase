@@ -1,4 +1,4 @@
-name: Manually publish MZBase.EntityFrameworkCore NuGet Package
+name: Manually publish MZBase.EntityFrameworkCore.Sql NuGet Package
 
 on:
   workflow_dispatch:
@@ -17,13 +17,13 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore MZBase.EntityFrameworkCore/MZBase.EntityFrameworkCore.csproj
+      run: dotnet restore MZBase.EntityFrameworkCore.Sql/MZBase.EntityFrameworkCore.Sql.csproj
 
     - name: Build
-      run: dotnet build --configuration Release MZBase.EntityFrameworkCore/MZBase.EntityFrameworkCore.csproj
+      run: dotnet build --configuration Release MZBase.EntityFrameworkCore.Sql/MZBase.EntityFrameworkCore.Sql.csproj
 
     - name: Pack
-      run: dotnet pack --configuration Release --output ./nupkg MZBase.EntityFrameworkCore/MZBase.EntityFrameworkCore.csproj
+      run: dotnet pack --configuration Release --output ./nupkg MZBase.EntityFrameworkCore.Sql/MZBase.EntityFrameworkCore.Sql.csproj
 
     - name: Publish NuGet package
       env:
