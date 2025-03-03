@@ -1,9 +1,9 @@
-name: Publish MZBase.Infrastructure NuGet Package
+name: Publish MZBase.Domain NuGet Package
 
 on:
   push:
     paths:
-      - 'MZBase.Infrastructure/**'
+      - 'MZBase.domain/**'
   release:
     types: [created]
 
@@ -18,16 +18,16 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore MZBase.Infrastructure/MZBase.Infrastructure.csproj
+      run: dotnet restore MZBase.domain/MZBase.domain.csproj
 
     - name: Build
-      run: dotnet build --configuration Release MZBase.Infrastructure/MZBase.Infrastructure.csproj
+      run: dotnet build --configuration Release MZBase.domain/MZBase.domain.csproj
 
     - name: Pack
-      run: dotnet pack --configuration Release --output ./nupkg MZBase.Infrastructure/MZBase.Infrastructure.csproj
+      run: dotnet pack --configuration Release --output ./nupkg MZBase.domain/MZBase.domain.csproj
 
     - name: Publish NuGet package
       env:
