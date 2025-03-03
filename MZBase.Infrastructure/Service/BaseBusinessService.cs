@@ -4,7 +4,11 @@ using System.Text;
 
 namespace MZBase.Infrastructure.Service
 {
-
+    /// <summary>
+    /// An abstract base class designed to be used as the root of every business service class . 
+    /// It  also provide logging functionality for derived business service classes.
+    /// </summary>
+    /// <typeparam name="LogCategory"></typeparam>
     public abstract class BaseBusinessService<LogCategory>
     {
         protected readonly ILogger<LogCategory> _logger;
