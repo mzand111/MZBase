@@ -1,4 +1,4 @@
-name: Manually publish MZBase.Infrastructure NuGet Package
+name: Manually publish MZBase.Domain NuGet Package
 
 on:
   workflow_dispatch:
@@ -17,13 +17,13 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore MZBase.Infrastructure/MZBase.Infrastructure.csproj
+      run: dotnet restore MZBase.Domain/MZBase.Domain.csproj
 
     - name: Build
-      run: dotnet build --configuration Release MZBase.Infrastructure/MZBase.Infrastructure.csproj
+      run: dotnet build --configuration Release MZBase.Domain/MZBase.Domain.csproj
 
     - name: Pack
-      run: dotnet pack --configuration Release --output ./nupkg MZBase.Infrastructure/MZBase.Infrastructure.csproj
+      run: dotnet pack --configuration Release --output ./nupkg MZBase.Domain/MZBase.Domain.csproj
 
     - name: Publish NuGet package
       env:
