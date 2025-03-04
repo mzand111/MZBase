@@ -1,4 +1,4 @@
-name: Manually publish MZBase.Test NuGet Package
+name: Publish MZBase.Test NuGet Package
 
 on:
   push:

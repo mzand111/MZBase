@@ -3,7 +3,7 @@ name: Publish MZBase.Domain NuGet Package
 on:
   push:
     paths:
-      - 'MZBase.domain/**'
+      - 'MZBase.Domain/**'
   release:
     types: [created]
 
@@ -21,13 +21,13 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore MZBase.domain/MZBase.domain.csproj
+      run: dotnet restore MZBase.Domain/MZBase.Domain.csproj
 
     - name: Build
-      run: dotnet build --configuration Release MZBase.domain/MZBase.domain.csproj
+      run: dotnet build --configuration Release MZBase.Domain/MZBase.Domain.csproj
 
     - name: Pack
-      run: dotnet pack --configuration Release --output ./nupkg MZBase.domain/MZBase.domain.csproj
+      run: dotnet pack --configuration Release --output ./nupkg MZBase.Domain/MZBase.Domain.csproj
 
     - name: Publish NuGet package
       env:

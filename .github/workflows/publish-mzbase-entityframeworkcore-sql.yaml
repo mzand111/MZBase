@@ -1,4 +1,4 @@
-name: Manually publish MZBase.EntityFrameworkCore.Sql NuGet Package
+name: Publish MZBase.EntityFrameworkCore.Sql NuGet Package
 
 on:
   push:

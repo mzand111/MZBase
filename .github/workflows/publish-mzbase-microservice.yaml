@@ -1,4 +1,4 @@
-name: Manually publish MZBase.Microservices NuGet Package
+name: Publish MZBase.Microservices NuGet Package
 
 on:
   push:
