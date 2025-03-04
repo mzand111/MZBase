@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\manual_publish-mzbase-entityframeworkcore-sql.yaml = .github\workflows\manual_publish-mzbase-entityframeworkcore-sql.yaml
 		.github\workflows\manual_publish-mzbase-entityframeworkcore.yaml = .github\workflows\manual_publish-mzbase-entityframeworkcore.yaml
 		.github\workflows\manual_publish-mzbase-infrastructure.yaml = .github\workflows\manual_publish-mzbase-infrastructure.yaml
+		.github\workflows\manual_publish-mzbase-microservice.yaml = .github\workflows\manual_publish-mzbase-microservice.yaml
+		.github\workflows\manual_publish-mzbase-test.yaml = .github\workflows\manual_publish-mzbase-test.yaml
 		.github\workflows\publish-mzbase-domain.yaml = .github\workflows\publish-mzbase-domain.yaml
 		.github\workflows\publish-mzbase-infrastructure.yaml = .github\workflows\publish-mzbase-infrastructure.yaml
 	EndProjectSection
