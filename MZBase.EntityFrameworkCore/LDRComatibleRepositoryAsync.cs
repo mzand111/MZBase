@@ -12,7 +12,7 @@ namespace MZBase.EntityFrameworkCore
     /// <typeparam name="DBModelEntity">The type of the database model entity.</typeparam>
     /// <typeparam name="DomainModelEntity">The type of the domain model entity.</typeparam>
     /// <typeparam name="PrimaryKeyType">The type of the primary key.</typeparam>
-    public class LDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType> : RepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>, ILDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>
+    public class LDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType> : BaseRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>, ILDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>
         where DomainModelEntity : Model<PrimaryKeyType>
         where DBModelEntity : DomainModelEntity, IConvertibleDBModelEntity<DomainModelEntity>, new()
         where PrimaryKeyType : struct
