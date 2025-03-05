@@ -54,7 +54,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 //item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
                 //    .ReturnsAsync(dbObject);
@@ -94,7 +94,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 //item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
                 //    .ReturnsAsync(dbObject);
@@ -133,7 +133,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 //item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
                 //    .ReturnsAsync(dbObject);
@@ -168,7 +168,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.AllItemsAsync(It.IsAny<LinqDataRequest>()))
                  .ReturnsAsync(new LinqDataResult<TModel>());
@@ -198,7 +198,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.AllItemsAsync(It.IsAny<LinqDataRequest>()))
                  .Throws(new Exception());
@@ -258,7 +258,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
                 return item.Object;
             });
             uofm.Setup(uu => uu.CommitAsync()).Throws<Exception>();
@@ -308,7 +308,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(default(TDBModel));
@@ -339,7 +339,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(storageObject);
@@ -367,7 +367,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(storageObject);
@@ -405,7 +405,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(default(TDBModel));
@@ -440,7 +440,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
@@ -471,7 +471,7 @@ namespace MZBase.Test.Unit.Service
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);

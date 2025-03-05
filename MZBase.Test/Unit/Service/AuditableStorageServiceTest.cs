@@ -230,7 +230,7 @@ namespace MZBase.Test.Unit.Service
             AddUoWMockSetupsCommon(uofm);
             uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
@@ -295,7 +295,7 @@ namespace MZBase.Test.Unit.Service
             AddUoWMockSetupsCommon(uofm);
             uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
@@ -357,7 +357,7 @@ namespace MZBase.Test.Unit.Service
             AddUoWMockSetupsCommon(uofm);
             uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
@@ -424,7 +424,7 @@ namespace MZBase.Test.Unit.Service
             AddUoWMockSetupsCommon(uofm);
             uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
                 item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);

@@ -16,7 +16,7 @@ Different repository implementations are included.</Description>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
-    <PackageReference Include="MZSimpleDynamicLinq.EFCoreExtensions" Version="1.0.2" />
+    <PackageReference Include="MZSimpleDynamicLinq.EFCoreExtensions" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>

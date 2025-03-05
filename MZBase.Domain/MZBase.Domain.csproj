@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MZSimpleDynamicLinq.Core" Version="1.0.3" />
+    <PackageReference Include="MZSimpleDynamicLinq.Core" Version="1.0.4" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 

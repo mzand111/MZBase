@@ -17,7 +17,7 @@ namespace MZBase.EntityFrameworkCore
         where DataContext : DbContext
     {
         protected readonly UnitOfWork _unitOfWork;
-        protected readonly ILDRCompatibleRepositoryAsync<DomainModel, DBModelEntity, PrimaryKeyType> _baseRepo;
+        protected readonly IBaseLDRCompatibleRepositoryAsync<DomainModel, DBModelEntity, PrimaryKeyType> _baseRepo;
 
         public EFCoreStorageBusinessService(UnitOfWork unitOfWork,
               IDateTimeProviderService dateTimeProvider,

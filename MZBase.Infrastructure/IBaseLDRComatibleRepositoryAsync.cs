@@ -9,12 +9,11 @@ namespace MZBase.Infrastructure
     /// </summary>
     /// <typeparam name="ModelItem"></typeparam>
     /// <typeparam name="T"></typeparam>
-    public interface ILDRCompatibleRepositoryAsync<ModelItem, DBModelEntity, T> : IRepositoryAsync<ModelItem, DBModelEntity, T>
+    public interface IBaseLDRCompatibleRepositoryAsync<ModelItem, DBModelEntity, T> : IBaseRepositoryAsync<ModelItem, DBModelEntity, T>
           where ModelItem : Model<T>
          where DBModelEntity : ModelItem, IConvertibleDBModelEntity<ModelItem>, new()
           where T : struct
     {
         Task<LinqDataResult<ModelItem>> AllItemsAsync(LinqDataRequest request);
-        LinqDataResult<ModelItem> AllItems(LinqDataRequest request);
     }
 }

@@ -9,7 +9,7 @@ namespace MZBase.Infrastructure
     /// </summary>
     /// <typeparam name="ModelItem"></typeparam>
     /// <typeparam name="T"></typeparam>
-    public interface IPSFRepositoryAsync<ModelItem, DBModelEntity, T> : IRepositoryAsync<ModelItem, DBModelEntity, T>
+    public interface IBasePSFRepositoryAsync<ModelItem, DBModelEntity, T> : IBaseRepositoryAsync<ModelItem, DBModelEntity, T>
           where ModelItem : Model<T>
          where DBModelEntity : ModelItem, IConvertibleDBModelEntity<ModelItem>, new()
           where T : struct
@@ -17,10 +17,5 @@ namespace MZBase.Infrastructure
         Task<IReadOnlyList<ModelItem>> AllItemsAsync(int pageSize, int skip);
         Task<IReadOnlyList<ModelItem>> AllItemsAsync(int pageSize, int skip, string sortColumn, string sortDirection);
         Task<int> GetTotalCountAsync();
-
-        IReadOnlyList<ModelItem> AllItems(int pageSize, int skip);
-        IReadOnlyList<ModelItem> AllItems(int pageSize, int skip, string sortColumn, string sortDirection);
-        int GetTotalCount();
-
     }
 }
