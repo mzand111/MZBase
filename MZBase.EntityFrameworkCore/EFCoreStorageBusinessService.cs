@@ -71,7 +71,22 @@ namespace MZBase.EntityFrameworkCore
                 throw noObj;
             }
             await ValidateOnModifyAsync(item, currentItem);
-            currentItem.SetFieldsFromDomainModel(item);
+
+            if (item is Auditable<PrimaryKeyType> au)
+            {
+                var creator = au.CreatedBy;
+                var lastModifier = au.LastModifiedBy;
+                currentItem.SetFieldsFromDomainModel(item);
+                if (currentItem is Auditable<PrimaryKeyType> cu)
+                {
+                    cu.CreatedBy = creator;
+                    cu.LastModifiedBy = lastModifier;
+                }
+            }
+            else
+            {
+                currentItem.SetFieldsFromDomainModel(item);
+            }
             try
             {
                 await _unitOfWork.CommitAsync();
