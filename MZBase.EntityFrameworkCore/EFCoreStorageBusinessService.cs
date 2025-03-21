@@ -72,16 +72,14 @@ namespace MZBase.EntityFrameworkCore
             }
             await ValidateOnModifyAsync(item, currentItem);
 
-            if (item is Auditable<PrimaryKeyType> au)
+            if (currentItem is Auditable<PrimaryKeyType> au)
             {
+                //This is to keep these fields intact
                 var creator = au.CreatedBy;
                 var lastModifier = au.LastModifiedBy;
                 currentItem.SetFieldsFromDomainModel(item);
-                if (currentItem is Auditable<PrimaryKeyType> cu)
-                {
-                    cu.CreatedBy = creator;
-                    cu.LastModifiedBy = lastModifier;
-                }
+                au.CreatedBy = creator;
+                au.LastModifiedBy = lastModifier;
             }
             else
             {
