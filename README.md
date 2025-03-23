@@ -148,3 +148,6 @@ public class UserProfileImageEntity : UserProfileImage, IConvertibleDBModelEntit
 ## MZBase.Domain
 1.  `IDto<DomainObject, PrimaryKey>` could be used to implement domain object related Dto classes.
 
+
+# Samples
+1. [MZBaseSample](https://github.com/mzand111/MZBaseSample) : A sample company registration service, to show how to setup repository, Unit of Work (UoW), and service design patterns using MZBase. The solution provides an API to perform CRUD operations (Create, Read, Update, Delete) on a sample entity: Company. The Company model includes a collection of branches (CompanyBranch), which are managed and saved alongside their parent Company entity. 
