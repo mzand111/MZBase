@@ -75,7 +75,7 @@ Contains:
 # Breaking Change in version 2
 By getting feedbacks from version 1, the version 2 main goal is to minimize the need to add boiler-plate codes. At the first revisions this movement is mostly seen in BaseStorageBusinessService class. By using decedents of this class (Such as EFCoreStorageBusinessService), you are now able to implement a storage service business class with a few lines of code. 
 ## MZBase.Infrastructure
-1-	`IRepositoryAsync`: 
+1-	`IRepositoryAsync`: Now acts as the root of repository interfaces in this package.
 a.	Converted not-needed async methods to sync methods.
 The operations inside these methods are usually not effected by any time-taking action that require to be async. The time-taking action usually takes place when the storage (usually a data context) is requested to save the changes
 
@@ -91,12 +91,20 @@ To
 public interface IRepositoryAsync<ModelItem, DBModelEntity, T>
 ```
 This change allows service layer classes to use data layer entities without type casting. 
+c. Added non-async methods:
+```cs
+DBModelEntity? FirstOrDefault(Expression<Func<DBModelEntity, bool>> predicate);
 
-2-	Other interfaces inheriting `IRepositoryAsync`: `IPSFRepositoryAsync`, `ILDRCompatibleRepositoryAsync`
+DBModelEntity GetById(T id);
+
+IReadOnlyList<ModelItem> AllItems();
+```
+2- `IRepositoryAsync`: With the introduction of `IBaseRepositoryAsync` in version 2.x, this interface should be used to implement the repository pattern in scenarios where the Unit of Work (UoW) pattern is unnecessary. Consequently, this interface now includes the method signatures for `SaveChangeAsync()` and `SaveChanges()`, which must be implemented by any inheriting class."
+3-	Other interfaces inheriting `IRepositoryAsync`: `IPSFRepositoryAsync`, `ILDRCompatibleRepositoryAsync`:
 Changes made to reflect changes to the base interface
-3-	The class `BaseBusinessService`  has been added as a root for all business service classes
-4-	A new base for storage service classes has been added: `BaseStorageBusinessService`
-Decendents of this calss such as `EFCoreStorageBusinessService` are now containing the most common boiler plate codes needed to implement a storage service class. The only methods needed to be implemented by the user are `ValidateOnAddAsync` and `ValidateOnModifyAsync`.
+4-	The class `BaseBusinessService`  has been added as a root for all business service classes
+5-	A new base for storage service classes has been added: `BaseStorageBusinessService`
+Decedents of this class such as `EFCoreStorageBusinessService` are now containing the most common boiler plate codes needed to implement a storage service class. The only methods needed to be implemented by the user are `ValidateOnAddAsync` and `ValidateOnModifyAsync`. By this change you will need to develope much less code than before. 
 
 
 ## MZBase.EntityFrameworkCore
@@ -135,6 +143,8 @@ public class UserProfileImageEntity : UserProfileImage, IConvertibleDBModelEntit
 
 2.	Methods that were not needed to be async were converted to sync version.
 3.	Thanks to the change that all the db entities now implement `IConvertibleDBModelEntity`, insert method now works with any instance of a `DomainModelEntity`.
+4.  To reflect changes made to `IRepositoryAsync` and `IBaseRepositoryAsync`, this package now contains both `BaseRepositoryAsync` and `RepositoryAsync`. The second could be used when you are not considering to use UoW pattern. 
 
-
+## MZBase.Domain
+1.  `IDto<DomainObject, PrimaryKey>` could be used to implement domain object related Dto classes.
 
