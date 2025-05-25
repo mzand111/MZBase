@@ -17,11 +17,11 @@ namespace MZBase.Microservices.HttpServices
         protected readonly string _httpClientBaseAddress;
         protected readonly string _serviceUniqueName;
         protected readonly ILogger<T> _logger;
-        public ServiceMediatorBase(HttpClient httpClient, ILogger<T> logger, string serviceBaseAddress, string serviceUniqeName)
+        public ServiceMediatorBase(HttpClient httpClient, ILogger<T> logger, string serviceBaseAddress, string serviceUniqueName)
         {
             _httpClient = httpClient;
             _httpClientBaseAddress = serviceBaseAddress;
-            _serviceUniqueName = serviceUniqeName;
+            _serviceUniqueName = serviceUniqueName;
             _logger = logger;
 
             _httpClient.BaseAddress = new Uri(_httpClientBaseAddress);
@@ -38,7 +38,7 @@ namespace MZBase.Microservices.HttpServices
 
                 if (!httpResponseMessage.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(httpResponseMessage, address, "GetAsync");
+                    await ProcessNotSuccessfulResponse(httpResponseMessage, address, "GetAsync");
                 }
 
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
@@ -60,7 +60,7 @@ namespace MZBase.Microservices.HttpServices
 
                 if (!httpResponseMessage.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(httpResponseMessage, address, "GetAsync");
+                    await ProcessNotSuccessfulResponse(httpResponseMessage, address, "GetAsync");
                 }
 
                 if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
@@ -100,7 +100,7 @@ namespace MZBase.Microservices.HttpServices
                         exMessage += ",Inner message" + ex.InnerException.Message;
                     }
 
-                    _logger.LogError(ex, "Failed to do deserialize output after successfull get method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                    _logger.LogError(ex, "Failed to do deserialize output after successful get method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
                         + exMessage
                      , "GetAsync"
                      , _serviceUniqueName
@@ -171,7 +171,7 @@ namespace MZBase.Microservices.HttpServices
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(response, apiUrl, "PostAsync");
+                    await ProcessNotSuccessfulResponse(response, apiUrl, "PostAsync");
                 }
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                        , "PostAsync"
@@ -200,7 +200,7 @@ namespace MZBase.Microservices.HttpServices
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(response, apiUrl, "PostAsync");
+                    await ProcessNotSuccessfulResponse(response, apiUrl, "PostAsync");
                 }
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                        , "PostAsync"
@@ -237,7 +237,7 @@ namespace MZBase.Microservices.HttpServices
                     {
                         exMessage += ",Inner message" + ex.InnerException.Message;
                     }
-                    _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                    _logger.LogError(ex, "Failed to do deserialize output after successful post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
                         + exMessage
                      , "PostAsync"
                      , _serviceUniqueName
@@ -265,7 +265,7 @@ namespace MZBase.Microservices.HttpServices
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(response, apiUrl, "PostAsync");
+                    await ProcessNotSuccessfulResponse(response, apiUrl, "PostAsync");
                 }
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                        , "PostAsync"
@@ -296,7 +296,7 @@ namespace MZBase.Microservices.HttpServices
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(response, apiUrl, "PutAsync");
+                    await ProcessNotSuccessfulResponse(response, apiUrl, "PutAsync");
                 }
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                       , "PutAsync"
@@ -335,7 +335,7 @@ namespace MZBase.Microservices.HttpServices
                     {
                         exMessage += ",Inner message" + ex.InnerException.Message;
                     }
-                    _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                    _logger.LogError(ex, "Failed to do deserialize output after successful post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
                         + exMessage
                      , "PutAsync"
                      , _serviceUniqueName
@@ -368,7 +368,7 @@ namespace MZBase.Microservices.HttpServices
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(response, apiUrl, "PutAsync");
+                    await ProcessNotSuccessfulResponse(response, apiUrl, "PutAsync");
                 }
                 _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                       , "PutAsync"
@@ -395,7 +395,7 @@ namespace MZBase.Microservices.HttpServices
                 {
                     if (!response.IsSuccessStatusCode)
                     {
-                        await processNotSuccessfullResponse(response, apiUrl, "PostFormFileAsync");
+                        await ProcessNotSuccessfulResponse(response, apiUrl, "PostFormFileAsync");
                     }
 
                     _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
@@ -423,7 +423,7 @@ namespace MZBase.Microservices.HttpServices
                 {
                     if (!response.IsSuccessStatusCode)
                     {
-                        await processNotSuccessfullResponse(response, apiUrl, "PostFormFileAsync");
+                        await ProcessNotSuccessfulResponse(response, apiUrl, "PostFormFileAsync");
                     }
 
                     _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
@@ -464,7 +464,7 @@ namespace MZBase.Microservices.HttpServices
                         {
                             exMessage += ",Inner message" + ex.InnerException.Message;
                         }
-                        _logger.LogError(ex, "Failed to do deserialize output after successfull post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
+                        _logger.LogError(ex, "Failed to do deserialize output after successful post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' exception:"
                             + exMessage
                          , "PostFormFileAsync"
                          , _serviceUniqueName
@@ -493,11 +493,11 @@ namespace MZBase.Microservices.HttpServices
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    await processNotSuccessfullResponse(response, apiUrl, "DeleteAsync");
+                    await ProcessNotSuccessfulResponse(response, apiUrl, "DeleteAsync");
                 }
                 else
                 {
-                    _logger.LogInformation("Seccessfully called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                    _logger.LogInformation("Successfully called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                               , "DeleteAsync"
                               , _serviceUniqueName
                               , _httpClientBaseAddress + apiUrl);
@@ -525,7 +525,7 @@ namespace MZBase.Microservices.HttpServices
             return request;
         }
 
-        protected async Task processNotSuccessfullResponse(HttpResponseMessage? response, string apiUrl, string methodName)
+        protected async Task ProcessNotSuccessfulResponse(HttpResponseMessage? response, string apiUrl, string methodName)
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -571,7 +571,7 @@ namespace MZBase.Microservices.HttpServices
                 responsContent = responsContent.Replace("\"", "");
 
                 _logger.LogError("Failed to do post method calling remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}' ReasonPhrase:" + response.ReasonPhrase
-                    + ",responsContent:" + responsContent
+                    + ",responseContent:" + responsContent
                   , methodName
                   , _serviceUniqueName
                   , _httpClientBaseAddress + apiUrl);
@@ -594,7 +594,7 @@ namespace MZBase.Microservices.HttpServices
 
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
-                await processNotSuccessfullResponse(httpResponseMessage, address, "GetAsync");
+                await ProcessNotSuccessfulResponse(httpResponseMessage, address, "GetAsync");
             }
 
             if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
