@@ -12,7 +12,7 @@ namespace MZBase.EntityFrameworkCore
     /// <typeparam name="DBModelEntity">The type of the database model entity.</typeparam>
     /// <typeparam name="DomainModelEntity">The type of the domain model entity.</typeparam>
     /// <typeparam name="PrimaryKeyType">The type of the primary key.</typeparam>
-    public class LDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType> : RepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>, ILDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>
+    public class BaseLDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType> : BaseRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>, IBaseLDRCompatibleRepositoryAsync<DomainModelEntity, DBModelEntity, PrimaryKeyType>
         where DomainModelEntity : Model<PrimaryKeyType>
         where DBModelEntity : DomainModelEntity, IConvertibleDBModelEntity<DomainModelEntity>, new()
         where PrimaryKeyType : struct
@@ -21,7 +21,7 @@ namespace MZBase.EntityFrameworkCore
         /// Initializes a new instance of the <see cref="BaseLDRCompatibleRepositoryAsync{DBModelEntity, DomainModelEntity, PrimaryKeyType}"/> class.
         /// </summary>
         /// <param name="context">The database context.</param>
-        public LDRCompatibleRepositoryAsync(DbContext context) : base(context)
+        public BaseLDRCompatibleRepositoryAsync(DbContext context) : base(context)
         {
         }
 
@@ -33,11 +33,6 @@ namespace MZBase.EntityFrameworkCore
         public virtual async Task<LinqDataResult<DomainModelEntity>> AllItemsAsync(LinqDataRequest request)
         {
             return await _context.Set<DBModelEntity>().ToLinqDataResultAsync<DomainModelEntity>(request.Take, request.Skip, request.Sort, request.Filter);
-        }
-
-        public virtual LinqDataResult<DomainModelEntity> AllItems(LinqDataRequest request)
-        {
-            return _context.Set<DBModelEntity>().ToLinqDataResult<DomainModelEntity>(request.Take, request.Skip, request.Sort, request.Filter);
         }
     }
 }

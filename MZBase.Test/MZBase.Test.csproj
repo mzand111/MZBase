@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
     <Title>MZBase Test</Title>
-    <Version>1.0.2</Version>
+    <Version>2.0.0</Version>
     <Authors>Mahdi Zandakbari</Authors>
     <Description>This library provides facilities for testing classes of different layers of MZBase.Infrastructure base library</Description>
 	  <RepositoryType>git</RepositoryType>
@@ -14,8 +14,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoBogus" Version="2.13.1" />
-    <PackageReference Include="Moq" Version="4.18.4" />
-    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="xunit" Version="2.9.3" />
   </ItemGroup>
 
   <ItemGroup>
