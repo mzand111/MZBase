@@ -27,6 +27,13 @@ namespace MZBase.EntityFrameworkCore
             _unitOfWork = unitOfWork;
             _baseRepo = _unitOfWork.GetRepo<DomainModel, DBModelEntity, PrimaryKeyType>();
         }
+        private void _chackBaseRepo()
+        {
+            if (_baseRepo == null)
+            {
+                throw new ServiceException($"baseRepo was null. Make sure that the related {nameof(IBaseLDRCompatibleRepositoryAsync<DomainModel, DBModelEntity, PrimaryKeyType>)} is instantiated properly in the constructor of the related UoW and also is properly retuned in GetRep() method");
+            }
+        }
         public override async Task<PrimaryKeyType> AddAsync(DomainModel item)
         {
             if (item == null)
@@ -35,9 +42,9 @@ namespace MZBase.EntityFrameworkCore
                 LogAdd(null, null, ex);
                 throw ex;
             }
-
+            _chackBaseRepo();
             await ValidateOnAddAsync(item);
-
+          
             var g = _baseRepo.Insert(item);
             try
             {
@@ -62,7 +69,7 @@ namespace MZBase.EntityFrameworkCore
                 LogModify(item, null, exception);
                 throw exception;
             }
-
+            _chackBaseRepo();
             var currentItem = await _baseRepo.GetByIdAsync(item.ID);
             if (currentItem == null)
             {
@@ -101,6 +108,7 @@ namespace MZBase.EntityFrameworkCore
         }
         public override async Task RemoveByIdAsync(PrimaryKeyType ID)
         {
+            _chackBaseRepo();
             var itemToDelete = await _baseRepo.FirstOrDefaultAsync(ss => ss.ID.Equals(ID));
 
             if (itemToDelete == null)
@@ -125,6 +133,7 @@ namespace MZBase.EntityFrameworkCore
         }
         public override async Task<DomainModel> RetrieveByIdAsync(PrimaryKeyType ID)
         {
+            _chackBaseRepo();
             DBModelEntity? item;
             try
             {
@@ -146,6 +155,7 @@ namespace MZBase.EntityFrameworkCore
         }
         public override async Task<LinqDataResult<DomainModel>> ItemsAsync(LinqDataRequest request)
         {
+            _chackBaseRepo();
             try
             {
                 var f = await _baseRepo.AllItemsAsync(request);
