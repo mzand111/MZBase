@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MZBase.Domain
@@ -7,8 +8,10 @@ namespace MZBase.Domain
         where PrimaryKey : struct
     {
         [Column(Order = 100)]
+        [StringLength(256)]
         public virtual string CreatedBy { get; set; }
         [Column(Order = 101)]
+        [StringLength(256)]
         public virtual string LastModifiedBy { get; set; }
         [Column(Order = 102)]
         public virtual DateTime CreationTime { get; set; }
