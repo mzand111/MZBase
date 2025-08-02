@@ -83,10 +83,10 @@ namespace MZBase.EntityFrameworkCore
             {
                 //This is to keep these fields intact
                 var creator = au.CreatedBy;
-                var lastModifier = au.LastModifiedBy;
+                var creationTime = au.CreationTime;
                 currentItem.SetFieldsFromDomainModel(item);
                 au.CreatedBy = creator;
-                au.LastModifiedBy = lastModifier;
+                au.CreationTime = creationTime;
             }
             else
             {
