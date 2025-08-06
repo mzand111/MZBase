@@ -15,6 +15,6 @@ namespace MZBase.EntityFrameworkCore
 
         public void SaveChanges() => _context.SaveChanges();
 
-        public async Task SaveChangesAsync() => await _context.AddRangeAsync();
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
     }
 }

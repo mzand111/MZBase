@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>2.0.4</Version>
+    <Version>2.0.7</Version>
     <AssemblyVersion>1.0.1.1</AssemblyVersion>
     <Authors>Mahdi Zandakbari</Authors>
     <Description>An EFCore implementation of some of the more common interfaces of MZBase.Infrustructure.
@@ -15,8 +15,8 @@ Different repository implementations are included.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
-    <PackageReference Include="MZSimpleDynamicLinq.EFCoreExtensions" Version="1.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+    <PackageReference Include="MZSimpleDynamicLinq.EFCoreExtensions" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
