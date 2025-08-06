@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>2.0.2</Version>
+    <Version>2.0.3</Version>
     <Authors>Mahdi Zandakbari</Authors>
     <Description>Contains:
 1- A helper to transfer description attributes of entity classes to extended properties (MS_Description) of related table/column of database for any ef core DbContext. This changes could be used by any third party tool like Redgate SqlDoc to generate Database documentation.</Description>
@@ -15,8 +15,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
   </ItemGroup>
 
 </Project>
