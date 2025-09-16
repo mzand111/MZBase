@@ -183,6 +183,31 @@ namespace MZBase.Infrastructure.Service
             Log(new EventId(_logBaseID + 3, "Modify"), s, model?.ID.ToString(), logType);
         }
 
+        protected void LogModify(string modelId, string? objectDescriptor = null, Exception? ex = null)
+        {
+            LogTypeEnum logType = LogTypeEnum.SuccessLog;
+            string s = typeof(Model).Name + " updated";
+            if (ex != null)
+            {
+                s = "Error in updating " + typeof(Model).Name;
+                logType = LogTypeEnum.ErrorLog;
+            }
+
+            if (modelId != null)
+            {
+                s += " ,ID:" + modelId;
+            }
+            if (!string.IsNullOrWhiteSpace(objectDescriptor))
+            {
+                s += " ," + objectDescriptor;
+            }
+            if (ex != null)
+            {
+                s += " ,exception:" + GetExceptionMessage(ex);
+            }
+            Log(new EventId(_logBaseID + 3, "Modify"), s, modelId, logType);
+        }
+
         /// <summary>
         /// Logs the removal of an entity.
         /// </summary>
