@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MZBase.Microservices.HttpServices
 {
@@ -542,7 +539,7 @@ namespace MZBase.Microservices.HttpServices
                     , methodName
                     , _serviceUniqueName
                     , _httpClientBaseAddress + apiUrl);
-                throw new Exception("Service address not found: '"+ _httpClientBaseAddress + apiUrl+"', Reason Phrase:" + response.ReasonPhrase);
+                throw new Exception("Service address not found: '" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" + response.ReasonPhrase);
             }
 
             string? responsContent = null;
@@ -562,7 +559,7 @@ namespace MZBase.Microservices.HttpServices
                     , _serviceUniqueName
                     , _httpClientBaseAddress + apiUrl);
 
-                throw new Exception("Failed to do post method:'" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" +  response.ReasonPhrase);
+                throw new Exception("Failed to do post method:'" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" + response.ReasonPhrase);
             }
             else
             {
@@ -576,7 +573,7 @@ namespace MZBase.Microservices.HttpServices
                   , _serviceUniqueName
                   , _httpClientBaseAddress + apiUrl);
 
-                throw new Exception("Failed calling remote procedure:'" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" +response.ReasonPhrase + "," + responsContent);
+                throw new Exception("Failed calling remote procedure:'" + _httpClientBaseAddress + apiUrl + "', Reason Phrase:" + response.ReasonPhrase + "," + responsContent);
             }
         }
 
@@ -618,6 +615,71 @@ namespace MZBase.Microservices.HttpServices
             return (outs.ToArray(), contentType, fileName);
 
 
+        }
+        public async ValueTask<FileContentResult> GetFileContentResultAsync(string address)
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                , "GetAsync"
+                , _serviceUniqueName
+                , _httpClientBaseAddress + address);
+
+
+            using var httpResponseMessage = await _httpClient.GetAsync(address);
+
+
+            if (!httpResponseMessage.IsSuccessStatusCode)
+            {
+                await ProcessNotSuccessfulResponse(httpResponseMessage, address, "GetAsync");
+            }
+
+            if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
+            {
+
+                return default;
+            }
+
+            _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                   , "GetAsync"
+                   , _serviceUniqueName
+                   , _httpClientBaseAddress + address);
+
+            return new FileContentResult(await httpResponseMessage.Content.ReadAsByteArrayAsync(), httpResponseMessage.Content.Headers.ContentType.MediaType);
+
+
+        }
+        public async ValueTask<FileStreamResult> GetFileStreamAsync(string address)
+        {
+            _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                , "GetAsync"
+                , _serviceUniqueName
+                , _httpClientBaseAddress + address);
+
+
+            using var httpResponseMessage = await _httpClient.GetAsync(address);
+
+
+            if (!httpResponseMessage.IsSuccessStatusCode)
+            {
+                await ProcessNotSuccessfulResponse(httpResponseMessage, address, "GetAsync");
+            }
+
+            if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
+            {
+                return default;
+            }
+
+            _logger.LogInformation("Successfully called remote procedure: Method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
+                   , "GetAsync"
+                   , _serviceUniqueName
+                   , _httpClientBaseAddress + address);
+
+            // Fix CS1503: Use stream, not byte[]
+            var stream = await httpResponseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+
+            // Fix CS8602: Check for null before dereferencing
+            var contentType = httpResponseMessage.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+
+            return new FileStreamResult(stream, contentType);
         }
     }
 }
