@@ -31,6 +31,11 @@ namespace MZBase.Infrastructure.Service.Exceptions
         {
             _code = code;
         }
+        public ServiceException(string message, int code, int groupingCode) : base(message)
+        {
+            _code = code;
+            GroupingCode = groupingCode;
+        }
         public ServiceException(string message, Exception innerException, int code) : base(message, innerException)
         {
             _code = code;
