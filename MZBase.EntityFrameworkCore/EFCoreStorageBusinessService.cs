@@ -22,7 +22,16 @@ namespace MZBase.EntityFrameworkCore
         public EFCoreStorageBusinessService(UnitOfWork unitOfWork,
               IDateTimeProviderService dateTimeProvider,
               ILogger<DomainModel> logger
-            ) : base(logger, dateTimeProvider, 600)
+            ) : base(logger, dateTimeProvider, 0)
+        {
+            _unitOfWork = unitOfWork;
+            _baseRepo = _unitOfWork.GetRepo<DomainModel, DBModelEntity, PrimaryKeyType>();
+        }
+        public EFCoreStorageBusinessService(UnitOfWork unitOfWork,
+             IDateTimeProviderService dateTimeProvider,
+             ILogger<DomainModel> logger,
+             int logBaseId
+           ) : base(logger, dateTimeProvider, logBaseId)
         {
             _unitOfWork = unitOfWork;
             _baseRepo = _unitOfWork.GetRepo<DomainModel, DBModelEntity, PrimaryKeyType>();

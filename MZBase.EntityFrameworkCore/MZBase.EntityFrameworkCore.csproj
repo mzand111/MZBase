@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>2.0.9</Version>
+    <Version>2.0.10</Version>
     <AssemblyVersion>1.0.1.1</AssemblyVersion>
     <Authors>Mahdi Zandakbari</Authors>
     <Description>An EFCore implementation of some of the more common interfaces of MZBase.Infrustructure.
