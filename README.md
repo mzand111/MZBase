@@ -42,7 +42,7 @@ Contains:
 ## MZBase.EntityFrameworkCore
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore/
 
-[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore/)
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.EntityFrameworkCore)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore/)
 
 Contains EFCore implementations of MZBase.Infrastructure interfaces including
 
