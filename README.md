@@ -42,7 +42,7 @@ Contains:
 ## MZBase.EntityFrameworkCore
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore/
 
-[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore/)
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.EntityFrameworkCore)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore/)
 
 Contains EFCore implementations of MZBase.Infrastructure interfaces including
 
@@ -55,7 +55,7 @@ Contains EFCore implementations of MZBase.Infrastructure interfaces including
 ## MZBase.Microservices
 https://www.nuget.org/packages/MZBase.Microservices/
 
-[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.Microservices/)
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Microservices)](https://www.nuget.org/packages/MZBase.Microservices/)
 
 Some classes to faciliate microservice communications:
 
@@ -65,7 +65,7 @@ Some classes to faciliate microservice communications:
 
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/
 
-[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.Infrastructure)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/)
+[![Nuget package](https://img.shields.io/nuget/vpre/MZBase.EntityFrameworkCore.Sql)](https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/)
 
 Contains:
 
