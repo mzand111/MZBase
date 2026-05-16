@@ -58,7 +58,7 @@ namespace MZBase.Infrastructure.Service.Exceptions
             if (_code != null)
                 sb.Append("service_exception_code:" + _code.ToString());
             if (GroupingCode != null)
-                sb.Append("service_exception_grouping_code:" + GroupingCode.ToString());
+                sb.Append(",service_exception_grouping_code:" + GroupingCode.ToString());
             if (Message != null)
                 sb.Append(",service_exception_message:" + Message);
             Exception ex = this;
