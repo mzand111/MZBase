@@ -15,6 +15,13 @@ namespace MZBase.Microservices.HttpServices
         protected readonly string _serviceUniqueName;
         protected readonly ILogger<T> _logger;
 
+        private static readonly JsonSerializerOptions _defaultSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            IncludeFields = true,
+            MaxDepth = 64
+        };
+
         /// <summary>
         /// Default retry policy for GET/DELETE operations (safe, idempotent)
         /// </summary>
@@ -380,12 +387,7 @@ namespace MZBase.Microservices.HttpServices
                 {
                     using (var stream = await content.ReadAsStreamAsync().ConfigureAwait(false))
                     {
-                        var result = await JsonSerializer.DeserializeAsync<TOut>(stream, new JsonSerializerOptions() 
-                        { 
-                            MaxDepth = 5, 
-                            IncludeFields = true, 
-                            PropertyNameCaseInsensitive = true 
-                        });
+                        var result = await JsonSerializer.DeserializeAsync<TOut>(stream, _defaultSerializerOptions);
                         return result;
                     }
                 }

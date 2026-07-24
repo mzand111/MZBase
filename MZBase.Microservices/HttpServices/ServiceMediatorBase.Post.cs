@@ -86,7 +86,7 @@ namespace MZBase.Microservices.HttpServices
                             {
                                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                                 {
-                                    var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream, new JsonSerializerOptions() { MaxDepth = 5, IncludeFields = true, PropertyNameCaseInsensitive = true });
+                                    var apiResponseDto = await JsonSerializer.DeserializeAsync<TOut>(stream, _defaultSerializerOptions);
                                     deserializedResult = apiResponseDto;
                                 }
                             }
