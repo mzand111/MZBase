@@ -1,28 +1,24 @@
-﻿using MZBase.Infrastructure.Service;
+﻿using AutoBogus;
 using Microsoft.Extensions.Logging;
 using Moq;
 using MZBase.Domain;
 using MZBase.Infrastructure;
+using MZBase.Infrastructure.Service;
+using MZBase.Infrastructure.Service.Exceptions;
+using MZSimpleDynamicLinq.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using MZBase.Infrastructure.Service.Exceptions;
-
-using AutoBogus;
-using Bogus;
-using MZSimpleDynamicLinq.Core;
 
 namespace MZBase.Test.Unit.Service
 {
-    public abstract class StorageServiceTest<StorageService, TUnitOfWork, TModel, PrimarykeyType>
-        where StorageService : IStorageBusinessService<TModel, PrimarykeyType>
+    public abstract class StorageServiceTest<StorageService, TUnitOfWork, TModel, TDBModel, PrimaryKeyType>
+        where StorageService : IStorageBusinessService<TModel, PrimaryKeyType>
        where TUnitOfWork : class, IDynamicTestableUnitOfWorkAsync
-        where TModel : Model<PrimarykeyType>
-       where PrimarykeyType : struct
+        where TModel : Model<PrimaryKeyType>
+          where TDBModel : TModel, IConvertibleDBModelEntity<TModel>, new()
+       where PrimaryKeyType : struct
 
     {
         protected Moq.Mock<ILogger<TModel>> serviceLogger;
@@ -35,13 +31,13 @@ namespace MZBase.Test.Unit.Service
         }
 
 
-        public abstract StorageBusinessService<TModel, PrimarykeyType> GetBusinessService(IDynamicTestableUnitOfWorkAsync uof);
+        public abstract BaseStorageBusinessService<TModel, PrimaryKeyType> GetBusinessService(IDynamicTestableUnitOfWorkAsync uof);
 
         [Fact]
         public virtual async Task Base_LogBaseIDShouldBeInitialized()
         {
             int obj = service.LogBaseID;
-            Assert.NotEqual(0, obj);//,"Retrived object should not be null"
+            Assert.NotEqual(0, obj);//,"Retrieved object should not be null"
         }
 
         #region Retrieve
@@ -49,20 +45,20 @@ namespace MZBase.Test.Unit.Service
         public virtual async Task Base_Get_Success()
         {
             //arrange
-            var fakeID = AutoFaker.Generate<PrimarykeyType>();
-            Mock<TModel> dbObjectMock = new Mock<TModel>() { };
+            var fakeID = AutoFaker.Generate<PrimaryKeyType>();
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>() { };
             dbObjectMock.SetupProperty(uu => uu.ID, fakeID);
 
 
-            TModel dbObject = dbObjectMock.Object;
+            TDBModel dbObject = dbObjectMock.Object;
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 //item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
                 //    .ReturnsAsync(dbObject);
-                item.Setup(gg => gg.GetByIdAsync(It.Is<PrimarykeyType>(uu => uu.Equals(fakeID))))
+                item.Setup(gg => gg.GetByIdAsync(It.Is<PrimaryKeyType>(uu => uu.Equals(fakeID))))
                  .ReturnsAsync(dbObject);
 
                 return item.Object;
@@ -71,7 +67,7 @@ namespace MZBase.Test.Unit.Service
             //act
             TModel obj = await localService.RetrieveByIdAsync(fakeID);
 
-            Assert.NotEqual(null, obj);//,"Retrived object should not be null"
+            Assert.NotEqual(null, obj);//,"Retrieved object should not be null"
             Assert.Equal(fakeID, obj.ID);
             //assert
             serviceLogger.Verify(
@@ -87,22 +83,22 @@ namespace MZBase.Test.Unit.Service
         public virtual async Task Base_Get_FailNotFound()
         {
             //arrange
-            var fakeID1 = AutoFaker.Generate<PrimarykeyType>();
-            var fakeID2 = AutoFaker.Generate<PrimarykeyType>();
+            var fakeID1 = AutoFaker.Generate<PrimaryKeyType>();
+            var fakeID2 = AutoFaker.Generate<PrimaryKeyType>();
 
-            Mock<TModel> dbObjectMock = new Mock<TModel>() { };
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>() { };
             dbObjectMock.SetupProperty(uu => uu.ID, fakeID1);
 
 
-            TModel dbObject = dbObjectMock.Object;
+            TDBModel dbObject = dbObjectMock.Object;
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 //item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
                 //    .ReturnsAsync(dbObject);
-                item.Setup(gg => gg.GetByIdAsync(It.Is<PrimarykeyType>(uu => uu.Equals(fakeID1))))
+                item.Setup(gg => gg.GetByIdAsync(It.Is<PrimaryKeyType>(uu => uu.Equals(fakeID1))))
                  .ReturnsAsync(dbObject);
 
                 return item.Object;
@@ -126,22 +122,22 @@ namespace MZBase.Test.Unit.Service
         public virtual async Task Base_Get_FailStorageError()
         {
             //arrange
-            var fakeID1 = AutoFaker.Generate<PrimarykeyType>();
-            var fakeID2 = AutoFaker.Generate<PrimarykeyType>();
+            var fakeID1 = AutoFaker.Generate<PrimaryKeyType>();
+            var fakeID2 = AutoFaker.Generate<PrimaryKeyType>();
 
-            Mock<TModel> dbObjectMock = new Mock<TModel>() { };
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>() { };
             dbObjectMock.SetupProperty(uu => uu.ID, fakeID1);
 
 
             TModel dbObject = dbObjectMock.Object;
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 //item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
                 //    .ReturnsAsync(dbObject);
-                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
+                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimaryKeyType>()))
                  .ThrowsAsync(new Exception());
 
                 return item.Object;
@@ -170,9 +166,9 @@ namespace MZBase.Test.Unit.Service
         {
             //arrange           
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.AllItemsAsync(It.IsAny<LinqDataRequest>()))
                  .ReturnsAsync(new LinqDataResult<TModel>());
@@ -183,7 +179,7 @@ namespace MZBase.Test.Unit.Service
             //act
             var obj = await localService.ItemsAsync(new LinqDataRequest());
 
-            Assert.NotEqual(null, obj);//,"Retrived object should not be null"
+            Assert.NotEqual(null, obj);//,"Retrieved object should not be null"
 
             //assert
             serviceLogger.Verify(
@@ -200,9 +196,9 @@ namespace MZBase.Test.Unit.Service
         {
             //arrange           
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
                 item.Setup(gg => gg.AllItemsAsync(It.IsAny<LinqDataRequest>()))
                  .Throws(new Exception());
@@ -260,9 +256,9 @@ namespace MZBase.Test.Unit.Service
         protected virtual async Task Base_Add_ShouldReturnServiceStorageException_WhenErrorOnDB(TModel item)
         {
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
                 return item.Object;
             });
             uofm.Setup(uu => uu.CommitAsync()).Throws<Exception>();
@@ -310,14 +306,14 @@ namespace MZBase.Test.Unit.Service
             Mock<TModel> incommingObjectMock = new Mock<TModel>();
             TModel incommingObject = incommingObjectMock.Object;
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TModel, bool>>>()))
-                    .ReturnsAsync(default(TModel));
-                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
-                 .ReturnsAsync(default(TModel));
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
+                    .ReturnsAsync(default(TDBModel));
+                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimaryKeyType>()))
+                 .ReturnsAsync(default(TDBModel));
 
                 return item.Object;
             });
@@ -337,17 +333,17 @@ namespace MZBase.Test.Unit.Service
             serviceLogger.VerifyNoOtherCalls();
 
         }
-        protected virtual async Task Base_Modify_ShouldSuccess_WhenValid(TModel incommingObject, TModel storageObject)
+        protected virtual async Task Base_Modify_ShouldSuccess_WhenValid(TModel incommingObject, TDBModel storageObject)
         {
             //arrange
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TModel, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(storageObject);
-                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
+                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimaryKeyType>()))
                  .ReturnsAsync(storageObject);
 
                 return item.Object;
@@ -365,22 +361,22 @@ namespace MZBase.Test.Unit.Service
              It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
             uofm.Verify(uu => uu.CommitAsync(), Times.Once, "Save method from UoW expected to be called once");
         }
-        protected virtual async Task Base_Modify_ShouldReturnServiceStorageException_WhenErrorOnDB(TModel incommingObject, TModel storageObject)
+        protected virtual async Task Base_Modify_ShouldReturnServiceStorageException_WhenErrorOnDB(TModel incommingObject, TDBModel storageObject)
         {
             //arrange
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TModel, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(storageObject);
-                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
+                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimaryKeyType>()))
                  .ReturnsAsync(storageObject);
 
                 return item.Object;
             });
-            //Inner object (UoW or deeper ones) throws any axception on save
+            //Inner object (UoW or deeper ones) throws any exception on save
             uofm.Setup(uu => uu.CommitAsync()).Throws<Exception>();
             var localService = GetBusinessService(uofm.Object);
             //act
@@ -407,20 +403,20 @@ namespace MZBase.Test.Unit.Service
             //arrange           
 
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TModel, bool>>>()))
-                    .ReturnsAsync(default(TModel));
-                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
-                 .ReturnsAsync(default(TModel));
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
+                    .ReturnsAsync(default(TDBModel));
+                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimaryKeyType>()))
+                 .ReturnsAsync(default(TDBModel));
 
                 return item.Object;
             });
             var localService = GetBusinessService(uofm.Object);
             //act
-            Func<Task> act = () => localService.RemoveByIdAsync(default(PrimarykeyType));
+            Func<Task> act = () => localService.RemoveByIdAsync(default(PrimaryKeyType));
             //assert
             ServiceObjectNotFoundException exception = await Assert.ThrowsAsync<ServiceObjectNotFoundException>(act);
 
@@ -438,24 +434,24 @@ namespace MZBase.Test.Unit.Service
         public virtual async Task Base_Remove_ShouldSuccess_WhenValid()
         {
             //arrange
-            Mock<TModel> dbObjectMock = new Mock<TModel>();
-            TModel dbObject = dbObjectMock.Object;
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>();
+            TDBModel dbObject = dbObjectMock.Object;
 
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TModel, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
-                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
+                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimaryKeyType>()))
                  .ReturnsAsync(dbObject);
 
                 return item.Object;
             });
             var localService = GetBusinessService(uofm.Object);
             //act
-            await localService.RemoveByIdAsync(default(PrimarykeyType));
+            await localService.RemoveByIdAsync(default(PrimaryKeyType));
             //assert
             serviceLogger.Verify(
              x => x.Log(
@@ -470,25 +466,25 @@ namespace MZBase.Test.Unit.Service
         public virtual async Task Base_ModifyRemove_ShouldReturnServiceStorageException_WhenErrorOnDB()
         {
             //arrange
-            Mock<TModel> dbObjectMock = new Mock<TModel>();
-            TModel dbObject = dbObjectMock.Object;
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>();
+            TDBModel dbObject = dbObjectMock.Object;
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
-            uofm.Setup(uu => uu.GetRepo<TModel, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<TModel, TDBModel, PrimaryKeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<TModel, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<TModel, TDBModel, PrimaryKeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TModel, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
-                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
+                item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimaryKeyType>()))
                  .ReturnsAsync(dbObject);
 
                 return item.Object;
             });
-            //Inner object (UoW or deeper ones) throws any axception on save
+            //Inner object (UoW or deeper ones) throws any exception on save
             uofm.Setup(uu => uu.CommitAsync()).Throws<Exception>();
             var localService = GetBusinessService(uofm.Object);
             //act
-            Func<Task> act = () => localService.RemoveByIdAsync(default(PrimarykeyType));
+            Func<Task> act = () => localService.RemoveByIdAsync(default(PrimaryKeyType));
             //assert
             ServiceStorageException exception = await Assert.ThrowsAsync<ServiceStorageException>(act);
             //assert

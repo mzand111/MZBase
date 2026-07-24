@@ -104,7 +104,7 @@ namespace MZBase.EntityFrameworkCore.Sql
 
         private void SetColumnDescription(string tableName, string columnName, string description, string schema = "dbo")
         {
-            string strGetDesc = "select [value] from fn_listextendedproperty('MS_Description','schema','dbo','table',N'" + tableName + "','column',null) where objname = N'" + columnName + "';";
+            string strGetDesc = "select [value] from fn_listextendedproperty('MS_Description','schema','dbo','table',N'" + tableName + "',N'column',null) where objname = N'" + columnName + "';";
             var prevDesc = RunSqlScalar(strGetDesc);
             if (prevDesc == null)
             {

@@ -1,23 +1,22 @@
-﻿using MZBase.Infrastructure.Service;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Moq;
 using MZBase.Domain;
 using MZBase.Infrastructure;
+using MZBase.Infrastructure.Service;
+using MZBase.Infrastructure.Service.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using MZBase.Infrastructure.Service.Exceptions;
 
 namespace MZBase.Test.Unit.Service
 {
-    public abstract class AuditableStorageServiceTest<StorageService, TUnitOfWork, Model, PrimarykeyType> : StorageServiceTest<StorageService, TUnitOfWork, Model, PrimarykeyType>
-        where StorageService : StorageBusinessService<Model, PrimarykeyType>
+    public abstract class AuditableStorageServiceTest<StorageService, TUnitOfWork, Model, TDBModel, PrimarykeyType> : StorageServiceTest<StorageService, TUnitOfWork, Model, TDBModel, PrimarykeyType>
+        where StorageService : BaseStorageBusinessService<Model, PrimarykeyType>
        where TUnitOfWork : class, IDynamicTestableUnitOfWorkAsync
         where Model : Auditable<PrimarykeyType>
+          where TDBModel : Model, IConvertibleDBModelEntity<Model>, new()
        where PrimarykeyType : struct
 
     {
@@ -25,7 +24,10 @@ namespace MZBase.Test.Unit.Service
         {
 
         }
+        protected virtual void AddMockSetupsCommon(Mock<TDBModel> mock)
+        {
 
+        }
         protected virtual void AddUoWMockSetupsCommon(Mock<TUnitOfWork> uowMock)
         {
 
@@ -55,9 +57,9 @@ namespace MZBase.Test.Unit.Service
             serviceLogger.VerifyNoOtherCalls();
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreatedBy_IsEmpty &&
-            uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' expected when epmty on add");
+            uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' expected when empty on add");
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when epmty on add");
+            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when empty on add");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreationTime_ValueIsNotValid &&
             uu.FieldName == nameof(entity.CreationTime)), "Validation error for field '" + nameof(entity.CreationTime) + "' expected");
@@ -88,7 +90,7 @@ namespace MZBase.Test.Unit.Service
             Assert.False(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreatedBy_IsEmpty &&
            uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' was not expected");
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when epmty on add");
+            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when empty on add");
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreatedByAndLastModifiedBy_ShouldBeSameAtStart &&
            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected, when not matched with '" + nameof(entity.CreatedBy) + "' field on add");
 
@@ -119,9 +121,9 @@ namespace MZBase.Test.Unit.Service
              It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreatedBy_IsEmpty &&
-            uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' expected when epmty on add");
+            uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' expected when empty on add");
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when epmty on add");
+            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when empty on add");
 
             Assert.False(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreationTime_ValueIsNotValid &&
             uu.FieldName == nameof(entity.CreationTime)), "Validation error for field '" + nameof(entity.CreationTime) + "' was not expected");
@@ -155,7 +157,7 @@ namespace MZBase.Test.Unit.Service
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreatedBy_IsEmpty &&
            uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' expected");
             Assert.False(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when epmty on add");
+            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when empty on add");
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreatedByAndLastModifiedBy_ShouldBeSameAtStart &&
            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected, when not matched with '" + nameof(entity.CreatedBy) + "' field on add");
 
@@ -186,9 +188,9 @@ namespace MZBase.Test.Unit.Service
              It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreatedBy_IsEmpty &&
-           uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' expected when epmty on add");
+           uu.FieldName == nameof(entity.CreatedBy)), "Validation error for field '" + nameof(entity.CreatedBy) + "' expected when empty on add");
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when epmty on add");
+            uu.FieldName == nameof(entity.LastModifiedBy)), "Validation error for field '" + nameof(entity.LastModifiedBy) + "' expected when empty on add");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.CreationTime_ValueIsNotValid &&
             uu.FieldName == nameof(entity.CreationTime)), "Validation error for field '" + nameof(entity.CreationTime) + "' expected");
@@ -206,17 +208,17 @@ namespace MZBase.Test.Unit.Service
         public virtual async Task Auditable_Modify_ShouldRaise_ServiceModelValidationException_WhenAuditableFieldsNotSetOnModify()
         {
             //arrange           
-            Mock<Model> dbObjectMock = new Mock<Model>();
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>();
 
 
-            //We assume that the object in database has the data consistensy
+            //We assume that the object in database has the data consistency
             var f = DateTime.Now;
             dbObjectMock.Setup<string>(uu => uu.CreatedBy).Returns("someCreatorUser");
             dbObjectMock.Setup<string>(uu => uu.LastModifiedBy).Returns("someCreatorUser");
             dbObjectMock.Setup<DateTime>(uu => uu.CreationTime).Returns(f);
             dbObjectMock.Setup<DateTime>(uu => uu.LastModificationTime).Returns(f);
             AddMockSetupsCommon(dbObjectMock);
-            Model dbObject = dbObjectMock.Object;
+            TDBModel dbObject = dbObjectMock.Object;
 
             Mock<Model> incommingObjectMock = new Mock<Model>();
             AddMockSetupsCommon(incommingObjectMock);
@@ -226,11 +228,11 @@ namespace MZBase.Test.Unit.Service
 
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             AddUoWMockSetupsCommon(uofm);
-            uofm.Setup(uu => uu.GetRepo<Model, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
                 item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
                  .ReturnsAsync(dbObject);
@@ -254,31 +256,31 @@ namespace MZBase.Test.Unit.Service
 
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when epmty on modify");
+            uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when empty on modify");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_ValueIsNotValid &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' expected when epmty on modify");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' expected when empty on modify");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeCreationOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeLastModificationOfDBObjectOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
 
         }
         [Fact]
         public virtual async Task Auditable_Modify_ShouldRaise_ServiceModelValidationException_WhenJustLastModifiedBySetOnModify()
         {
             //arrange           
-            Mock<Model> dbObjectMock = new Mock<Model>();
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>();
 
-            //We assume that the object in database has the data consistensy
+            //We assume that the object in database has the data consistency
             var f = DateTime.Now;
             dbObjectMock.Setup<DateTime>(uu => uu.CreationTime).Returns(f);
             dbObjectMock.Setup<DateTime>(uu => uu.LastModificationTime).Returns(f);
             dbObjectMock.Setup<string>(uu => uu.CreatedBy).Returns("someCreatorUser");
             dbObjectMock.Setup<string>(uu => uu.LastModifiedBy).Returns("someCreatorUser");
-            Model dbObject = dbObjectMock.Object;
+            TDBModel dbObject = dbObjectMock.Object;
 
 
             Mock<Model> incommingObjectMock = new Mock<Model>();
@@ -291,11 +293,11 @@ namespace MZBase.Test.Unit.Service
 
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             AddUoWMockSetupsCommon(uofm);
-            uofm.Setup(uu => uu.GetRepo<Model, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
                 item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
                  .ReturnsAsync(dbObject);
@@ -319,30 +321,30 @@ namespace MZBase.Test.Unit.Service
 
 
             Assert.False(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when epmty on modify");
+            uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when empty on modify");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_ValueIsNotValid &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' was not expected when not epmty on modify");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' was not expected when not empty on modify");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeCreationOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeLastModificationOfDBObjectOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
 
         }
         [Fact]
         public virtual async Task Auditable_Modify_ShouldRaise_ServiceModelValidationException_WhenJustLastModificationTimeSetOnAnOlderThanBothDBTimesOnModify()
         {
-            Mock<Model> dbObjectMock = new Mock<Model>();
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>();
 
-            //We assume that the object in database has the data consistensy
+            //We assume that the object in database has the data consistency
             var f = DateTime.Now;
             dbObjectMock.Setup<DateTime>(uu => uu.CreationTime).Returns(f);
             dbObjectMock.Setup<DateTime>(uu => uu.LastModificationTime).Returns(f);
             dbObjectMock.Setup<string>(uu => uu.CreatedBy).Returns("someCreatorUser");
             dbObjectMock.Setup<string>(uu => uu.LastModifiedBy).Returns("someCreatorUser");
-            Model dbObject = dbObjectMock.Object;
+            TDBModel dbObject = dbObjectMock.Object;
 
 
             Mock<Model> incommingObjectMock = new Mock<Model>();
@@ -353,11 +355,11 @@ namespace MZBase.Test.Unit.Service
 
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             AddUoWMockSetupsCommon(uofm);
-            uofm.Setup(uu => uu.GetRepo<Model, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
                 item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
                  .ReturnsAsync(dbObject);
@@ -381,16 +383,16 @@ namespace MZBase.Test.Unit.Service
 
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-             uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when epmty on modify");
+             uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when empty on modify");
 
             Assert.False(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_ValueIsNotValid &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' was not expected when not epmty on modify");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' was not expected when not empty on modify");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeCreationOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeLastModificationOfDBObjectOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
 
 
         }
@@ -398,15 +400,15 @@ namespace MZBase.Test.Unit.Service
         public virtual async Task Auditable_Modify_ShouldRaise_ServiceModelValidationException_WhenJustLastModificationTimeSetOnAnOlderLastModificationTimeFromDBOnModify()
         {
             //arrange           
-            Mock<Model> dbObjectMock = new Mock<Model>();
-            //We assume that the object in database has the data consistensy
+            Mock<TDBModel> dbObjectMock = new Mock<TDBModel>();
+            //We assume that the object in database has the data consistency
             dbObjectMock.Setup<string>(uu => uu.CreatedBy).Returns("someCreatorUser");
             dbObjectMock.Setup<string>(uu => uu.LastModifiedBy).Returns("someCreatorUser");
             var f = DateTime.Now;
             dbObjectMock.Setup<DateTime>(uu => uu.CreationTime).Returns(f.AddDays(-2));
             dbObjectMock.Setup<DateTime>(uu => uu.LastModificationTime).Returns(f);
 
-            Model dbObject = dbObjectMock.Object;
+            TDBModel dbObject = dbObjectMock.Object;
 
 
 
@@ -420,11 +422,11 @@ namespace MZBase.Test.Unit.Service
 
             Moq.Mock<TUnitOfWork> uofm = new Mock<TUnitOfWork>() { };
             AddUoWMockSetupsCommon(uofm);
-            uofm.Setup(uu => uu.GetRepo<Model, PrimarykeyType>()).Returns(() =>
+            uofm.Setup(uu => uu.GetRepo<Model, TDBModel, PrimarykeyType>()).Returns(() =>
             {
-                var item = new Mock<ILDRCompatibleRepositoryAsync<Model, PrimarykeyType>>();
+                var item = new Mock<IBaseLDRCompatibleRepositoryAsync<Model, TDBModel, PrimarykeyType>>();
 
-                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<Model, bool>>>()))
+                item.Setup(gg => gg.FirstOrDefaultAsync(It.IsAny<Expression<Func<TDBModel, bool>>>()))
                     .ReturnsAsync(dbObject);
                 item.Setup(gg => gg.GetByIdAsync(It.IsAny<PrimarykeyType>()))
                  .ReturnsAsync(dbObject);
@@ -448,13 +450,13 @@ namespace MZBase.Test.Unit.Service
 
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModifiedBy_IsEmpty &&
-            uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when epmty on modify");
+            uu.FieldName == nameof(incommingObject.LastModifiedBy)), "Validation error for field '" + nameof(incommingObject.LastModifiedBy) + "' expected when empty on modify");
 
             Assert.False(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeCreationOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.CreationTime) + "' field of dbObject");
 
             Assert.True(exception.ValidationErrors.Any(uu => uu.Code == (int)ModelFieldValidationResultCode.LastModificationTime_CanNotBeBeforeLastModificationOfDBObjectOnModify &&
-            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incomming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
+            uu.FieldName == nameof(incommingObject.LastModificationTime)), "Validation error for field '" + nameof(incommingObject.LastModificationTime) + "' of incoming object expected when is before '" + nameof(dbObject.LastModificationTime) + "' field of dbObject");
 
 
         }

@@ -1,16 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace MZBase.Infrastructure.Service
 {
-
-    public abstract class BusinessService<LogCategory>
+    /// <summary>
+    /// An abstract base class designed to be used as the root of every business service class . 
+    /// It  also provide logging functionality for derived business service classes.
+    /// </summary>
+    /// <typeparam name="LogCategory"></typeparam>
+    public abstract class BaseBusinessService<LogCategory>
     {
         protected readonly ILogger<LogCategory> _logger;
 
-        public BusinessService(ILogger<LogCategory> logger)
+        public BaseBusinessService(ILogger<LogCategory> logger)
         {
             _logger = logger;
         }
@@ -34,7 +37,7 @@ namespace MZBase.Infrastructure.Service
         }
         protected void Log(EventId? eventId, string details, string? objectID = null, LogTypeEnum logType = LogTypeEnum.SuccessLog)
         {
-            //If datials has some {} it will be regarded as log parameter wich is not ok
+            //If datials has some {} it will be regarded as log parameter which is not acceptable
             details = details.Replace("{", "[");
             details = details.Replace("}", "]");
             if (logType == LogTypeEnum.ErrorLog)
