@@ -158,7 +158,7 @@ namespace MZBase.Microservices.HttpServices
                 async () =>
                 {
                     using var request = CreateHttpRequest(_httpClientBaseAddress + address, HttpMethod.Get, null, headers, configureOptions: configureOptions);
-                    using var httpResponseMessage = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                    var httpResponseMessage = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
                     if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
                     {

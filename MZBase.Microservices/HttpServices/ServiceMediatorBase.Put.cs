@@ -167,8 +167,8 @@ namespace MZBase.Microservices.HttpServices
                 {
                     using (var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
                     using (var request = CreateHttpRequest(_httpClientBaseAddress + apiUrl, HttpMethod.Put, content, headers, configureOptions: configureOptions))
-                    using (var httpResponse = await _httpClient.SendAsync(request).ConfigureAwait(false))
                     {
+                        var httpResponse = await _httpClient.SendAsync(request).ConfigureAwait(false);
                         string responseContent = await httpResponse.Content.ReadAsStringAsync();
 
                         if (!httpResponse.IsSuccessStatusCode)

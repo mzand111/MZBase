@@ -286,6 +286,7 @@ namespace MZBase.Microservices.HttpServices
                                 delayMs,
                                 response.StatusCode);
 
+                            response.Dispose();
                             await Task.Delay(delayMs);
                             continue;
                         }

@@ -61,6 +61,31 @@ Some classes to faciliate microservice communications:
 
   - `ServiceMediatorBase<T>`: Wraps HttpClient and do Gets,Posts,Puts and Deletes with exception handling, serialization, logging and authentication. 
 
+### Usage rules for `Try*` methods
+When using `TryGetAsync`, `TryPostAsync`, `TryPutAsync`, or `TryPostFormFileAsync`, keep the following in mind:
+
+- These methods return an `HttpResponseMessage` alongside the deserialized result.
+- The returned `HttpResponseMessage` must be disposed by the caller when it is no longer needed.
+- If you inspect the response status, headers, or content, wrap it in `try/finally` and call `response.Dispose()` in the `finally` block.
+- This is important for memory/resource management and avoids leaking response objects over time.
+
+Example:
+
+```csharp
+var (response, result) = await mediator.TryPostAsync(payload, "/api/example");
+try
+{
+    if (response.IsSuccessStatusCode)
+    {
+        // use result or response content
+    }
+}
+finally
+{
+    response.Dispose();
+}
+```
+
 ## MZBase.EntityFrameworkCore.Sql
 
 https://www.nuget.org/packages/MZBase.EntityFrameworkCore.Sql/
