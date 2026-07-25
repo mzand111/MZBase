@@ -129,7 +129,7 @@ namespace MZBase.Microservices.HttpServices
             return result;
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result)> TryGetAsync<TOut>(string address)
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryGetAsync<TOut>(string address)
         {
             return await TryGetAsync<TOut>(address, null, null, null);
         }
@@ -138,7 +138,7 @@ namespace MZBase.Microservices.HttpServices
         /// Performs a GET request with retry support and attempts to deserialize.
         /// Does NOT throw on deserialization failure - caller can inspect raw response.
         /// </summary>
-        public async Task<(HttpResponseMessage Response, TOut? Result)> TryGetAsync<TOut>(string address, RetryPolicy? retryPolicy)
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryGetAsync<TOut>(string address, RetryPolicy? retryPolicy)
         {
             return await TryGetAsync<TOut>(address, null, null, retryPolicy);
         }
@@ -147,14 +147,14 @@ namespace MZBase.Microservices.HttpServices
         /// Performs a GET request with optional headers, request options, retry support, and attempts to deserialize.
         /// Does NOT throw on deserialization failure - caller can inspect raw response.
         /// </summary>
-        public async Task<(HttpResponseMessage Response, TOut? Result)> TryGetAsync<TOut>(string address, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy)
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryGetAsync<TOut>(string address, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy)
         {
             _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                 , "TryGetAsync"
                 , _serviceUniqueName
                 , _httpClientBaseAddress + address);
 
-            var (response, result) = await ExecuteWithRetryAndResponseForTryAsync(
+            var (response, (result, rawResponse)) = await ExecuteWithRetryAndResponseForTryAsync(
                 async () =>
                 {
                     using var request = CreateHttpRequest(_httpClientBaseAddress + address, HttpMethod.Get, null, headers, configureOptions: configureOptions);
@@ -162,7 +162,7 @@ namespace MZBase.Microservices.HttpServices
 
                     if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
                     {
-                        return (httpResponseMessage, default(TOut?));
+                        return (httpResponseMessage, (default(TOut?), (string?)null));
                     }
 
                     string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -186,14 +186,16 @@ namespace MZBase.Microservices.HttpServices
                         }
 
                         httpResponseMessage.Dispose();
-                        return (newResponse, default(TOut?));
+                        return (newResponse, (default(TOut?), responseContent));
                     }
 
                     TOut? deserializedResult = await SafeDeserializeAsync<TOut>(
                         new StringContent(responseContent, Encoding.UTF8, httpResponseMessage.Content.Headers.ContentType?.MediaType ?? "application/json"),
                         responseContent);
 
-                    return (httpResponseMessage, deserializedResult);
+                    string? raw = deserializedResult == null ? responseContent : null;
+
+                    return (httpResponseMessage, (deserializedResult, raw));
                 },
                 "TryGetAsync",
                 address,
@@ -206,7 +208,7 @@ namespace MZBase.Microservices.HttpServices
                    , response.StatusCode
                    , result != null);
 
-            return (response, result);
+            return (response, result, rawResponse);
         }
     }
 }

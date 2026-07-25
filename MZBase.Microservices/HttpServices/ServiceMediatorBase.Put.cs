@@ -135,17 +135,17 @@ namespace MZBase.Microservices.HttpServices
                   , _httpClientBaseAddress + apiUrl);
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl) where TIn : class
         {
             return await TryPutAsync<TIn, TOut>(item, apiUrl, null, null, null);
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers) where TIn : class
         {
             return await TryPutAsync<TIn, TOut>(item, apiUrl, headers, null, null);
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, RetryPolicy? retryPolicy) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, RetryPolicy? retryPolicy) where TIn : class
         {
             return await TryPutAsync<TIn, TOut>(item, apiUrl, headers, null, retryPolicy);
         }
@@ -154,7 +154,7 @@ namespace MZBase.Microservices.HttpServices
         /// Puts data with optional headers, request options, and retry policy.
         /// Does NOT throw on deserialization failure - caller can inspect raw response.
         /// </summary>
-        public async Task<(HttpResponseMessage Response, TOut? Result)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPutAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy) where TIn : class
         {
             _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                 , "TryPutAsync"
@@ -162,7 +162,7 @@ namespace MZBase.Microservices.HttpServices
                 , _httpClientBaseAddress + apiUrl);
 
             var jsonPayload = JsonSerializer.Serialize(item);
-            var (response, result) = await ExecuteWithRetryAndResponseForTryAsync(
+            var (response, (result, rawResponse)) = await ExecuteWithRetryAndResponseForTryAsync(
                 async () =>
                 {
                     using (var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
@@ -190,14 +190,16 @@ namespace MZBase.Microservices.HttpServices
                             }
 
                             httpResponse.Dispose();
-                            return (newResponse, default(TOut?));
+                            return (newResponse, (default(TOut?), responseContent));
                         }
 
                         TOut? deserializedResult = await SafeDeserializeAsync<TOut>(
                             new StringContent(responseContent, Encoding.UTF8, httpResponse.Content.Headers.ContentType?.MediaType ?? "application/json"),
                             responseContent);
 
-                        return (httpResponse, deserializedResult);
+                        string? raw = deserializedResult == null ? responseContent : null;
+
+                        return (httpResponse, (deserializedResult, raw));
                     }
                 },
                 "TryPutAsync",
@@ -211,7 +213,7 @@ namespace MZBase.Microservices.HttpServices
                   , response.StatusCode
                   , result != null);
 
-            return (response, result);
+            return (response, result, rawResponse);
         }
     }
 }
