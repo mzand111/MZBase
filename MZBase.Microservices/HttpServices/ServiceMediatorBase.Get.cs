@@ -129,32 +129,32 @@ namespace MZBase.Microservices.HttpServices
             return result;
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryGetAsync<TOut>(string address)
+        public async Task<(HttpResponseMessage Response, TOut? Result)> TryGetAsync<TOut>(string address)
         {
             return await TryGetAsync<TOut>(address, null, null, null);
         }
 
         /// <summary>
         /// Performs a GET request with retry support and attempts to deserialize.
-        /// Does NOT throw on deserialization failure - caller can inspect raw response.
+        /// Does NOT throw on deserialization failure - caller can inspect the response content.
         /// </summary>
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryGetAsync<TOut>(string address, RetryPolicy? retryPolicy)
+        public async Task<(HttpResponseMessage Response, TOut? Result)> TryGetAsync<TOut>(string address, RetryPolicy? retryPolicy)
         {
             return await TryGetAsync<TOut>(address, null, null, retryPolicy);
         }
 
         /// <summary>
         /// Performs a GET request with optional headers, request options, retry support, and attempts to deserialize.
-        /// Does NOT throw on deserialization failure - caller can inspect raw response.
+        /// Does NOT throw on deserialization failure - caller can inspect the response content.
         /// </summary>
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryGetAsync<TOut>(string address, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy)
+        public async Task<(HttpResponseMessage Response, TOut? Result)> TryGetAsync<TOut>(string address, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy)
         {
             _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                 , "TryGetAsync"
                 , _serviceUniqueName
                 , _httpClientBaseAddress + address);
 
-            var (response, (result, rawResponse)) = await ExecuteWithRetryAndResponseForTryAsync(
+            var (response, result) = await ExecuteWithRetryAndResponseForTryAsync(
                 async () =>
                 {
                     using var request = CreateHttpRequest(_httpClientBaseAddress + address, HttpMethod.Get, null, headers, configureOptions: configureOptions);
@@ -162,7 +162,7 @@ namespace MZBase.Microservices.HttpServices
 
                     if (httpResponseMessage.StatusCode == HttpStatusCode.NoContent)
                     {
-                        return (httpResponseMessage, (default(TOut?), (string?)null));
+                        return (httpResponseMessage, default(TOut?));
                     }
 
                     string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -186,16 +186,14 @@ namespace MZBase.Microservices.HttpServices
                         }
 
                         httpResponseMessage.Dispose();
-                        return (newResponse, (default(TOut?), responseContent));
+                        return (newResponse, default(TOut?));
                     }
 
                     TOut? deserializedResult = await SafeDeserializeAsync<TOut>(
                         new StringContent(responseContent, Encoding.UTF8, httpResponseMessage.Content.Headers.ContentType?.MediaType ?? "application/json"),
                         responseContent);
 
-                    string? raw = deserializedResult == null ? responseContent : null;
-
-                    return (httpResponseMessage, (deserializedResult, raw));
+                    return (httpResponseMessage, deserializedResult);
                 },
                 "TryGetAsync",
                 address,
@@ -208,7 +206,7 @@ namespace MZBase.Microservices.HttpServices
                    , response.StatusCode
                    , result != null);
 
-            return (response, result, rawResponse, response.StatusCode);
+            return (response, result);
         }
     }
 }

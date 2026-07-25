@@ -149,21 +149,21 @@ namespace MZBase.Microservices.HttpServices
             }
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryPostFormFileAsync<TOut>(IFormFile content, string apiUrl)
+        public async Task<(HttpResponseMessage Response, TOut? Result)> TryPostFormFileAsync<TOut>(IFormFile content, string apiUrl)
         {
             return await TryPostFormFileAsync<TOut>(content, apiUrl, null, null, null);
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryPostFormFileAsync<TOut>(IFormFile content, string apiUrl, RetryPolicy? retryPolicy)
+        public async Task<(HttpResponseMessage Response, TOut? Result)> TryPostFormFileAsync<TOut>(IFormFile content, string apiUrl, RetryPolicy? retryPolicy)
         {
             return await TryPostFormFileAsync<TOut>(content, apiUrl, null, null, retryPolicy);
         }
 
         /// <summary>
         /// Posts a file with optional headers, request options, and retry policy.
-        /// Does NOT throw on deserialization failure - caller can inspect raw response.
+        /// Does NOT throw on deserialization failure - caller can inspect the response content.
         /// </summary>
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryPostFormFileAsync<TOut>(IFormFile content, string apiUrl, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy)
+        public async Task<(HttpResponseMessage Response, TOut? Result)> TryPostFormFileAsync<TOut>(IFormFile content, string apiUrl, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy)
         {
             _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'"
                 , "TryPostFormFileAsync"
@@ -175,7 +175,7 @@ namespace MZBase.Microservices.HttpServices
                 content.CopyTo(target);
                 var fileBytes = target.ToArray();
 
-                var (response, (result, rawResponse)) = await ExecuteWithRetryAndResponseForTryAsync(
+                var (response, result) = await ExecuteWithRetryAndResponseForTryAsync(
                     async () =>
                     {
                         var multipartContent = new MultipartFormDataContent();
@@ -205,16 +205,14 @@ namespace MZBase.Microservices.HttpServices
                                 }
 
                                 httpResponse.Dispose();
-                                return (newResponse, (default(TOut?), responseContent));
+                                return (newResponse, default(TOut?));
                             }
 
                             TOut? deserializedResult = await SafeDeserializeAsync<TOut>(
                                 new StringContent(responseContent, Encoding.UTF8, httpResponse.Content.Headers.ContentType?.MediaType ?? "application/json"),
                                 responseContent);
 
-                            string? raw = deserializedResult == null ? responseContent : null;
-
-                            return (httpResponse, (deserializedResult, raw));
+                            return (httpResponse, deserializedResult);
                         }
                     },
                     "TryPostFormFileAsync",
@@ -228,7 +226,7 @@ namespace MZBase.Microservices.HttpServices
                      , response.StatusCode
                      , result != null);
 
-                return (response, result, rawResponse, response.StatusCode);
+                return (response, result);
             }
         }
     }
