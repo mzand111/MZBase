@@ -158,17 +158,17 @@ namespace MZBase.Microservices.HttpServices
                    , _httpClientBaseAddress + apiUrl);
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl) where TIn : class
         {
             return await TryPostAsync<TIn, TOut>(item, apiUrl, null, null, null);
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers) where TIn : class
         {
             return await TryPostAsync<TIn, TOut>(item, apiUrl, headers, null, null);
         }
 
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, RetryPolicy? retryPolicy) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, RetryPolicy? retryPolicy) where TIn : class
         {
             return await TryPostAsync<TIn, TOut>(item, apiUrl, headers, null, retryPolicy);
         }
@@ -177,7 +177,7 @@ namespace MZBase.Microservices.HttpServices
         /// Posts data with optional headers, request options, and retry policy.
         /// Does NOT throw on deserialization failure - caller can inspect raw response.
         /// </summary>
-        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy) where TIn : class
+        public async Task<(HttpResponseMessage Response, TOut? Result, string? RawResponse, System.Net.HttpStatusCode StatusCode)> TryPostAsync<TIn, TOut>(TIn item, string apiUrl, Dictionary<string, string>? headers, Action<HttpRequestOptions>? configureOptions, RetryPolicy? retryPolicy) where TIn : class
         {
             _logger.LogInformation("Called method '{ServiceMethod}' from service '{Category}' for remote address '{RemoteAddress}'", "TryPostAsync", _serviceUniqueName, _httpClientBaseAddress + apiUrl);
 
@@ -233,7 +233,7 @@ namespace MZBase.Microservices.HttpServices
                    , response.StatusCode
                    , result != null);
 
-            return (response, result, rawResponse);
+            return (response, result, rawResponse, response.StatusCode);
         }
     }
 }
