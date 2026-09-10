@@ -174,5 +174,146 @@ public class UserProfileImageEntity : UserProfileImage, IConvertibleDBModelEntit
 1.  `IDto<DomainObject, PrimaryKey>` could be used to implement domain object related Dto classes.
 
 
+# Special cases
+
+## Defining domain entities with composite keys
+
+Consider a mapping table that records which students are enrolled in which courses. Each enrollment is uniquely identified by the combination of `StudentId` and `CourseId`. Define a dedicated key struct for this combination and use it as the `Model<TPrimaryKey>` type argument.
+
+1. Define the domain model with a typed key:
+
+```cs
+public class StudentCourseEnrollment : Model<StudentCourseEnrollmentKey>
+{
+    public virtual int StudentId { get; set; }
+    public virtual int CourseId { get; set; }
+    public DateTime EnrollmentDate { get; set; }
+}
+```
+
+2. Define a key struct containing all key parts. Also define the `==` and `!=` operators:
+
+```cs
+public struct StudentCourseEnrollmentKey
+{
+    public int StudentId { get; set; }
+    public int CourseId { get; set; }
+
+    public StudentCourseEnrollmentKey(int studentId, int courseId)
+    {
+        StudentId = studentId;
+        CourseId = courseId;
+    }
+
+    public static bool operator ==(StudentCourseEnrollmentKey s1, StudentCourseEnrollmentKey s2)
+        => s1.StudentId == s2.StudentId && s1.CourseId == s2.CourseId;
+
+    public static bool operator !=(StudentCourseEnrollmentKey s1, StudentCourseEnrollmentKey s2)
+        => s1.StudentId != s2.StudentId || s1.CourseId != s2.CourseId;
+}
+```
+
+3. In DB entity class, map `ID` to/from key parts and keep `ID` as `[NotMapped]`.
+   Also override direct key columns and mark them as `[DatabaseGenerated(DatabaseGeneratedOption.None)]`:
+
+```cs
+[NotMapped]
+public override StudentCourseEnrollmentKey ID
+{
+    get => new StudentCourseEnrollmentKey(StudentId, CourseId);
+    set
+    {
+        StudentId = value.StudentId;
+        CourseId = value.CourseId;
+    }
+}
+
+[DatabaseGenerated(DatabaseGeneratedOption.None)]
+public override int StudentId { get; set; }
+
+[DatabaseGenerated(DatabaseGeneratedOption.None)]
+public override int CourseId { get; set; }
+```
+
+4. In `SetFieldsFromDomainModel`, set both direct key columns and `ID`:
+
+```cs
+public void SetFieldsFromDomainModel(StudentCourseEnrollment domainModelEntity)
+{
+    StudentId = domainModelEntity.StudentId;
+    CourseId = domainModelEntity.CourseId;
+    ID = domainModelEntity.ID;
+    EnrollmentDate = domainModelEntity.EnrollmentDate;
+}
+```
+
+5. Configure composite PK in `DbContext`:
+
+```cs
+modelBuilder.Entity<StudentCourseEnrollmentEntity>(p =>
+{
+    p.ToTable("StudentCourseEnrollments")
+     .HasKey(c => new { c.StudentId, c.CourseId });
+});
+```
+
+6. Use the same key type in repository and UoW:
+   - `IBaseLDRCompatibleRepositoryAsync<StudentCourseEnrollment, StudentCourseEnrollmentEntity, StudentCourseEnrollmentKey>`
+   - Add repository property in UoW interface/class and initialize it in the UoW constructor.
+
+This keeps domain key semantics explicit while remaining compatible with EF Core and MZBase generic repository/UoW contracts.
+
+## Defining entities with string IDs (Owner pattern)
+
+When the business identifier is a string (like `Owner.OwnerId`), keep a typed key struct and wrap the string in that key.
+
+1. Domain model pattern:
+
+```cs
+public class Owner : AuditableEx<OwnerKey>
+{
+    public string OwnerId { get; set; }
+    public string Title { get; set; }
+}
+
+public struct OwnerKey
+{
+    public string OwnerId { get; set; }
+    public OwnerKey(string ownerId) => OwnerId = ownerId;
+}
+```
+
+2. DB entity pattern (`OwnerEntity`):
+
+```cs
+[NotMapped]
+public override OwnerKey ID
+{
+    get => new OwnerKey(OwnerId);
+    set => OwnerId = value.OwnerId;
+}
+```
+
+3. `DbContext` pattern:
+
+```cs
+modelBuilder.Entity<OwnerEntity>(b =>
+{
+    b.Property(uu => uu.OwnerId)
+     .HasMaxLength(11)
+     .HasColumnName("ID");
+
+    b.HasKey(uu => uu.OwnerId);
+});
+```
+
+4. Repository and UoW pattern:
+   - Repository generic args remain strongly typed: `BaseLDRCompatibleRepositoryAsync<Owner, OwnerEntity, OwnerKey>`
+   - Override key-based retrieval using the wrapped string key (for example `id.OwnerId`).
+   - Expose repository in UoW as `IOwnerRepository Owners { get; }`.
+
+This pattern keeps public APIs strongly typed (`OwnerKey`) while storing and querying by string IDs in EF Core.
+
+
 # Samples
 1. [MZBaseSample](https://github.com/mzand111/MZBaseSample) : A sample company registration service, to show how to setup repository, Unit of Work (UoW), and service design patterns using MZBase. The solution provides an API to perform CRUD operations (Create, Read, Update, Delete) on a sample entity: Company. The Company model includes a collection of branches (CompanyBranch), which are managed and saved alongside their parent Company entity. 
